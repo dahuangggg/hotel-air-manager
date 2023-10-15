@@ -1,13 +1,9 @@
-import {
-  configureStore,
-  Action,
-  AnyAction
-} from '@reduxjs/toolkit';
-import { createBrowserHistory } from 'history';
-import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { configureStore, Action, AnyAction } from "@reduxjs/toolkit";
+import { createBrowserHistory } from "history";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
-import { ThunkAction, ThunkDispatch } from 'redux-thunk';
-import createRootReducer from './rootReducer';
+import { ThunkAction, ThunkDispatch } from "redux-thunk";
+import createRootReducer from "./rootReducer";
 
 export const history = createBrowserHistory();
 const rootReducer = createRootReducer(history);

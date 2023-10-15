@@ -15,7 +15,7 @@
    git clone https://github.com/bbnoYuan/hotel-air-manager.git
    ```
 2. 用 vscode 打开该项目，连接 WSL（linux 不需要这一步，相当于在 windows 跑 linux 环境）。这时系统可能会提示用 WSL 打开，没有的话要下载一个插件，记不清了，看 chatgpt 吧。
-   ![Alt text](Screenshot_20231010_145305-1.png)
+   ![Alt text](frontend/public/readme/Screenshot_20231010_145305-1.png)frontend/public/readme/
 3. 为后端创建一个虚拟环境，在终端依次输入以下命令：
 
 #### 导航到后端对应目录
@@ -80,4 +80,27 @@ localhost:3000
 127.0.0.1:8000
 ```
 
-数据库是默认的 db.sqlite3。<br> 9. 目前就前端画了 2 个 UI，在 localhost:3000/customer 和 localhost:3000/login，后端还没动（汗）。 10. 有问题的话直接找我吧，相关学习资料以后补上。
+数据库是默认的 db.sqlite3。<br> 
+9. 目前就前端画了 2 个 UI，在 localhost:3000/customer 和 localhost:3000/login，后端还没动（汗）。 
+
+10. 有问题的话直接找我吧，相关学习资料以后补上。
+
+## 2023/10/15
+添加了前端用户登录和认证,不确定数据库有没有一起上传,已经上传的话,下面是我的设置
+```
+访问127.0.0.1/admin(Django自带的管理员界面)的用户名:admin,密码:123456
+```
+用户名:房间101,密码:1111
+用户名:房间102,密码:2222
+用户名:房间103,密码:3333
+用户名:房间104,密码:4444
+```
+通过访问127.0.0.1/admin验证;如果没有的话需要自己创建一个超级用户,具体方法如下(注意要在虚拟环境下运行,具体方法见上面的3. 激活虚拟环境):
+```
+python manage.py createsuperuser
+```
+然后输入用户名和密码,就可以在后端登录了,登录后可以在后端管理界面添加用户,用于测试前端登录功能.
+![Alt text](frontend/public/readme/Screenshot_20231015_142709.png)
+![Alt text](frontend/public/readme/Screenshot_20231015_142834.png)
+![Alt text](frontend/public/readme/Screenshot_20231015_142912.png)
+![Alt text](frontend/public/readme/Screenshot_20231015_143143.png)

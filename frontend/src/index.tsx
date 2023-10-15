@@ -1,15 +1,18 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
 
 import Root from "./Root";
 import { history, configuredStore } from "./store";
 
 import "bootstrap/dist/js/bootstrap.min.js";
 import "bootstrap/dist/css/bootstrap.css";
-import axios from 'axios';
+import axios from "axios";
+import { ToastContainer } from "react-toastify";
 
+import "react-toastify/dist/ReactToastify.css";
+import "react-block-ui/style.css";
 
 // set the address of server
 if (window.location.origin === "http://localhost:3000") {
@@ -18,16 +21,24 @@ if (window.location.origin === "http://localhost:3000") {
   axios.defaults.baseURL = window.location.origin; // production serevr address
 }
 
-
 const store = configuredStore();
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
+
 root.render(
   <React.StrictMode>
     <Root store={store} history={history} />
-  </React.StrictMode>
+    <ToastContainer
+      position="top-right"
+      autoClose={3000}
+      hideProgressBar={true}
+      newestOnTop={true}
+      closeOnClick
+      pauseOnHover
+    />
+  </React.StrictMode>,
 );
 
 // If you want to start measuring performance in your app, pass a function
