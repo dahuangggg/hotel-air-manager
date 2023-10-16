@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  TextField, Select, MenuItem, InputLabel, FormControl,
-  Button, Paper, Grid, Typography, CircularProgress
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Button,
+  Paper,
+  Grid,
+  Typography,
+  CircularProgress,
 } from "@mui/material";
 import { login, getRoomsName, fetchRoomsName } from "../slices/authSlice";
 import { useAppDispatch } from "../store";
@@ -27,7 +35,12 @@ const LoginView: React.FC = () => {
   };
 
   return (
-    <Grid container justifyContent="center" alignItems="center" style={{ height: "100vh" }}>
+    <Grid
+      container
+      justifyContent="center"
+      alignItems="center"
+      style={{ height: "100vh" }}
+    >
       <Grid item xs={12} sm={8} md={6} lg={4}>
         <Paper elevation={3} style={{ padding: "20px" }}>
           <Typography variant="h4" align="center" gutterBottom>

@@ -1,20 +1,33 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState, TypedDispatch } from "../store";
-import { setAxiosAuthToken } from "./utils";
 import { NavigateFunction } from "react-router-dom";
 
 // 不考虑安全性,就用用户名当令牌算了
 let initToken: string | null = null;
 if (localStorage.getItem("token")) {
   initToken = localStorage.getItem("token");
-  setAxiosAuthToken(initToken);
 }
+
+type AcInfoType = {
+  roomNumber: string;
+  currentTemperature: number;
+  targetTemperature: number;
+  acStatus: boolean;
+  acMode: string;
+};
 
 const initialState = {
   token: initToken as string | null,
   roomsName: [] as string[],
   blockUI: false,
+  acInfo: {
+    roomNumber: "",
+    currentTemperature: 0,
+    targetTemperature: 0,
+    acStatus: false,
+    acMode: "",
+  } as AcInfoType,
 };
 
 const authSlice = createSlice({
@@ -23,7 +36,6 @@ const authSlice = createSlice({
   reducers: {
     setToken(state, action: PayloadAction<string | null>) {
       state.token = action.payload;
-      setAxiosAuthToken(action.payload);
       if (action.payload) {
         localStorage.setItem("token", action.payload);
       } else {
@@ -36,14 +48,19 @@ const authSlice = createSlice({
     setBlockUI(state, action: PayloadAction<boolean>) {
       state.blockUI = action.payload;
     },
+    setAcInfo(state, action: PayloadAction<AcInfoType>) {
+      state.acInfo = action.payload;
+    },
   },
 });
 
-export const { setToken, setRoomsName, setBlockUI } = authSlice.actions;
+export const { setToken, setRoomsName, setBlockUI, setAcInfo } =
+  authSlice.actions;
 
 export const getToken = (state: RootState) => state.auth.token;
 export const getRoomsName = (state: RootState) => state.auth.roomsName;
 export const getBlockUI = (state: RootState) => state.auth.blockUI;
+export const getAcInfo = (state: RootState) => state.auth.acInfo;
 
 export const login =
   (name: string, password: string, navigate: NavigateFunction) =>
@@ -51,12 +68,12 @@ export const login =
     try {
       const url = "/api/acounts/login/";
       const { data } = await axios.post(url, { name, password });
-      // console.log(data);
       dispatch(setToken(data.token));
+      await dispatch(fetchAcInfo());
       if (data.token === "管理员") {
-        navigate("/manager");
+        navigate("/ac-manager");
       } else if (data.token === "前台") {
-        navigate("/reception");
+        navigate("/ac-reception");
       } else if (data.token.includes("房间")) {
         navigate("/customer");
       } else {
@@ -84,5 +101,43 @@ export const fetchRoomsName = () => async (dispatch: TypedDispatch) => {
     console.log(error);
   }
 };
+
+export const fetchAcInfo = () => async (dispatch: TypedDispatch) => {
+  try {
+    dispatch(setBlockUI(true));
+
+    const url = "/api/conditioners/get_ac_info/";
+    const token = localStorage.getItem("token");
+    const { data } = await axios.post(url, { token });
+    const acInfo = data;
+    dispatch(setAcInfo(acInfo));
+    dispatch(setBlockUI(false));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateAcInfo =
+  (targetTemperature: number, acStatus: boolean, acMode: string) =>
+  async (dispatch: TypedDispatch) => {
+    try {
+      dispatch(setBlockUI(true));
+
+      const url = "/api/conditioners/update_ac_info/";
+      const token = localStorage.getItem("token");
+
+      const { data } = await axios.post(url, {
+        token: token,
+        targetTemperature: targetTemperature,
+        acStatus: acStatus,
+        acMode: acMode,
+      });
+      dispatch(setAcInfo(data));
+
+      dispatch(setBlockUI(false));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 export default authSlice.reducer;

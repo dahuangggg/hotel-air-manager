@@ -10,6 +10,7 @@ import CustomerAcView from "./views/CustomerAcView";
 import LoginView from "./views/LoginView";
 import MyComponent from "./views/ManagerView";
 import LogoutView from "./views/LogoutView";
+import ReceptionView from "./views/ReceptionView";
 
 type Props = {
   children: ReactNode;
@@ -36,6 +37,9 @@ export default function AppRoutes() {
           </Route>
           <Route path="/ac-manager" element={<RequireAuth />}>
             <Route index element={<MyComponent />} />
+          </Route>
+          <Route path="/reception" element={<RequireAuth />}>
+            <Route index element={<ReceptionView />} />
           </Route>
         </Routes>
       </App>

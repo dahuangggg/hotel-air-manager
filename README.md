@@ -15,7 +15,7 @@
    git clone https://github.com/bbnoYuan/hotel-air-manager.git
    ```
 2. 用 vscode 打开该项目，连接 WSL（linux 不需要这一步，相当于在 windows 跑 linux 环境）。这时系统可能会提示用 WSL 打开，没有的话要下载一个插件，记不清了，看 chatgpt 吧。
-   ![Alt text](frontend/public/readme/Screenshot_20231010_145305-1.png)frontend/public/readme/
+   ![Alt text](frontend/public/readme/Screenshot_20231010_145305-1.png)
 3. 为后端创建一个虚拟环境，在终端依次输入以下命令：
 
 #### 导航到后端对应目录
@@ -103,3 +103,7 @@ python manage.py createsuperuser
 ![Alt text](frontend/public/readme/Screenshot_20231015_142834.png)
 ![Alt text](frontend/public/readme/Screenshot_20231015_142912.png)
 ![Alt text](frontend/public/readme/Screenshot_20231015_143143.png)
+
+## 2023/10/16
+customer界面前后端数据的同步基本完成了,前端数值改变,后端数据库跟着改变</br>
+下一步做后端的日志记录,前端的日志显示,以及前端的UI美化

@@ -64,7 +64,7 @@ const IndexView: React.FC = () => {
             </Link>
           </Grid>
           <Grid item style={{ width: "80%", maxWidth: "300px" }}>
-            <Link to="/hotel-manager" style={{ width: "100%" }}>
+            <Link to="/reception" style={{ width: "100%" }}>
               <Button
                 variant="contained"
                 color="primary"

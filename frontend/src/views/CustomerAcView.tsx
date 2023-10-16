@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Grid,
@@ -10,37 +10,81 @@ import {
   Divider,
   Box,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
 } from "@mui/material";
+
 import { SelectChangeEvent } from "@mui/material/Select";
+import { useAppDispatch } from "../store";
+import { useSelector } from "react-redux";
+import { fetchAcInfo, getAcInfo, updateAcInfo } from "../slices/authSlice";
 
 const CustomerAcView: React.FC = () => {
-  // 初始状态
-  const [roomNumber, setRoomNumber] = useState("Room 101");
-  const [currentTemperature, setCurrentTemperature] = useState(25);
-  const [targetTemperature, setTargetTemperature] = useState(25);
-  const [acStatus, setAcStatus] = useState("Off");
-  const [acMode, setAcMode] = useState("Normal");
+  const dispatch = useAppDispatch();
+  const acInfo = useSelector(getAcInfo);
+
+  const [roomNumber, setRoomNumber] = useState(acInfo?.roomNumber || "");
+  const [currentTemperature, setCurrentTemperature] = useState(
+    acInfo?.currentTemperature || 0,
+  );
+  const [targetTemperature, setTargetTemperature] = useState(
+    acInfo?.targetTemperature || 0,
+  );
+  const [acStatus, setAcStatus] = useState(acInfo?.acStatus || false);
+  const [acMode, setAcMode] = useState(acInfo?.acMode || "正常模式");
+  const [change, setchange] = useState(false);
+
+  // 只用一次
+  useEffect(() => {
+    if (acInfo && !change) {
+      setchange(true);
+      setRoomNumber(acInfo.roomNumber);
+      setCurrentTemperature(acInfo.currentTemperature);
+      setTargetTemperature(acInfo.targetTemperature);
+      setAcStatus(acInfo.acStatus);
+      setAcMode(acInfo.acMode);
+    }
+  }, [acInfo, change]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      dispatch(fetchAcInfo());
+    };
+    fetchData();
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (targetTemperature === 0 || currentTemperature === 0) {
+      return;
+    }
+    if (
+      acInfo.targetTemperature === targetTemperature &&
+      acInfo.acStatus === acStatus &&
+      acInfo.acMode === acMode
+    ) {
+      return;
+    }
+    dispatch(updateAcInfo(targetTemperature, acStatus, acMode));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetTemperature, acStatus, acMode]);
 
   // 增加温度
   const increaseTemperature = () => {
-    if (acStatus === "On" && targetTemperature < 30) {
+    if (acStatus && targetTemperature < 30) {
       setTargetTemperature(targetTemperature + 1);
     }
   };
 
   // 减少温度
   const decreaseTemperature = () => {
-    if (acStatus === "On" && targetTemperature > 18) {
+    if (acStatus && targetTemperature > 18) {
       setTargetTemperature(targetTemperature - 1);
     }
   };
 
   // 切换空调状态
   const toggleAcStatus = () => {
-    setAcStatus(acStatus === "On" ? "Off" : "On");
+    setAcStatus(!acStatus);
   };
 
   // 切换空调模式
@@ -82,9 +126,9 @@ const CustomerAcView: React.FC = () => {
                   </Typography>
                   <Typography
                     variant="h6"
-                    color={acStatus === "On" ? "primary" : "error"}
+                    color={acStatus ? "primary" : "error"}
                   >
-                    {acStatus}
+                    {acStatus ? "开启" : "关闭"}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
@@ -98,9 +142,9 @@ const CustomerAcView: React.FC = () => {
                       displayEmpty
                       inputProps={{ "aria-label": "选择空调模式" }}
                     >
-                      <MenuItem value="Normal">正常模式</MenuItem>
-                      <MenuItem value="Energy Saving">节能模式</MenuItem>
-                      <MenuItem value="Auto">自动模式</MenuItem>
+                      <MenuItem value="正常模式">正常模式</MenuItem>
+                      <MenuItem value="节能模式">节能模式</MenuItem>
+                      <MenuItem value="自动模式">自动模式</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -123,7 +167,7 @@ const CustomerAcView: React.FC = () => {
                   style={{ margin: "10px 0" }}
                 >
                   <Button onClick={toggleAcStatus}>
-                    {acStatus === "On" ? "关闭" : "打开"}
+                    {acStatus ? "关闭" : "打开"}
                   </Button>
                 </ButtonGroup>
               </Box>

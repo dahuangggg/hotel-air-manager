@@ -5,9 +5,9 @@ from acounts.models import User
 
 class Conditioner(models.Model):
     MODE_CHOICES = (
-        ('0', '正常模式'),
-        ('1', '节能模式'),
-        ('2', '自动模式'),
+        ('正常模式', '正常模式'),
+        ('节能模式', '节能模式'),
+        ('自动模式', '自动模式'),
     )
     # 当前温度
     temperature_now = models.IntegerField(blank=False, default=25)

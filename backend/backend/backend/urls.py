@@ -17,9 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from acounts import urls as acounts_urls
+from conditioners import urls as conditioners_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
 urlpatterns += acounts_urls.acounts_urlpatterns
+urlpatterns += conditioners_urls.conditioners_urlpatterns

@@ -9,7 +9,7 @@ export default function RequireAuth() {
 
   if (!token) {
     return <Navigate to="/login" state={{ from: location }} replace />;
-  } 
+  }
   // else if (token.includes("房间")) {
   //   return <Navigate to="/customer" state={{ from: location }} replace />;
   // } else if (token === "管理员") {

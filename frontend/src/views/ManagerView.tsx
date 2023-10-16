@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 // import { useSelector } from "react-redux";
-import { setBlockUI } from "../slices/authSlice";
+import { fetchAcInfo, setBlockUI } from "../slices/authSlice";
 import { useAppDispatch } from "../store";
 
 const MyComponent: React.FC = () => {
