@@ -107,3 +107,33 @@ python manage.py createsuperuser
 ## 2023/10/16
 customer界面前后端数据的同步基本完成了,前端数值改变,后端数据库跟着改变</br>
 下一步做后端的日志记录,前端的日志显示,以及前端的UI美化
+
+## 2023/10/25
+增加了一个温度模拟器,通过celery实现的,为了实现该功能你需要安装一些新的包,在./backend目录(虚拟环境下)运行
+```
+pip install -r requirements.txt
+```
+如果你是首次使用celery,需要启动redis服务
+```
+sudo pacman -Syu
+sudo pacman -S redis
+sudo systemctl start redis
+# 如果想要开机自启动
+sudo systemctl enable redis
+# 查看redis状态
+sudo systemctl status redis
+```
+确保你已经运行了 Celery Beat 的数据库迁移命令，以创建 django_celery_beat_periodictask 表
+```
+python manage.py migrate django_celery_beat
+```
+然后新建一个终端,在./backend目录(虚拟环境)下运行cellery服务器
+```
+celery -A backend worker -l info
+```
+然后再新建一个终端,在./backend目录(虚拟环境)下运行cellery beat服务器
+```
+celery -A backend beat -l info
+```
+然后登陆127.0.0.1/admin,就可以看到温度和费用在变化了</br>
+前端还要加一个定时任务, 每10秒重新请求以下当前温度,然后更新到前端,免费GPT4的网站崩了,前端先不做了吧

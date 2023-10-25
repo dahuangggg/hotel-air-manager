@@ -31,7 +31,7 @@ const CustomerAcView: React.FC = () => {
     acInfo?.targetTemperature || 0,
   );
   const [acStatus, setAcStatus] = useState(acInfo?.acStatus || false);
-  const [acMode, setAcMode] = useState(acInfo?.acMode || "正常模式");
+  const [acMode, setAcMode] = useState(acInfo?.acMode || "低风速");
   const [change, setchange] = useState(false);
 
   // 只用一次
@@ -133,7 +133,7 @@ const CustomerAcView: React.FC = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="subtitle1" color="textSecondary">
-                    模式
+                    风速
                   </Typography>
                   <FormControl fullWidth>
                     <Select
@@ -142,9 +142,9 @@ const CustomerAcView: React.FC = () => {
                       displayEmpty
                       inputProps={{ "aria-label": "选择空调模式" }}
                     >
-                      <MenuItem value="正常模式">正常模式</MenuItem>
-                      <MenuItem value="节能模式">节能模式</MenuItem>
-                      <MenuItem value="自动模式">自动模式</MenuItem>
+                      <MenuItem value="低风速">低风速</MenuItem>
+                      <MenuItem value="中风速">中风速</MenuItem>
+                      <MenuItem value="高风速">高风速</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>

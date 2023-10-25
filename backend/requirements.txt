@@ -3,3 +3,7 @@ djangorestframework==3.14.0
 markdown==3.5
 django-filter==23.5
 django-cors-headers==4.3.0
+celery==5.3.4 # 处理定时任务
+redis==5.0.1 # 作为celery的broker
+django-redis==5.4.0
+django-celery-beat==2.5.0
