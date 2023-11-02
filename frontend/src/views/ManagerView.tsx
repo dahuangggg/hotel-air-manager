@@ -1,26 +1,78 @@
 import React, { useEffect } from "react";
-// import { useSelector } from "react-redux";
-import { fetchAcInfo, setBlockUI } from "../slices/authSlice";
+import {
+  Container,
+  Typography,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Card,
+  CardContent
+} from "@mui/material";
 import { useAppDispatch } from "../store";
+import { useSelector, useDispatch } from "react-redux";
+import {fetchAcInfos, getAcInfo, getAcInfos} from "../slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
-const MyComponent: React.FC = () => {
+const AdminAcView: React.FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  
+  const allAcInfos = useSelector(getAcInfos);
 
-  const handleButtonClick = () => {
-    dispatch(setBlockUI(true));
-
-    // 例如，模拟一个异步操作，2秒后完成
-    setTimeout(() => {
-      dispatch(setBlockUI(false));
-    }, 2000);
-  };
+  useEffect(() => {
+    dispatch(fetchAcInfos());
+  }, [dispatch]);
 
   return (
-    <div>
-      <p>Your main content goes here.</p>
-      <button onClick={handleButtonClick}>Click me to block UI</button>
-    </div>
+    <Container>
+      <Typography variant="h4" align="center" gutterBottom>
+        管理员空调信息
+      </Typography>
+      <Card elevation={3}>
+        <CardContent>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>房间号</TableCell>
+                  <TableCell>当前温度</TableCell>
+                  <TableCell>目标温度</TableCell>
+                  <TableCell>状态</TableCell>
+                  <TableCell>操作</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {allAcInfos.map((acInfo, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{acInfo.roomNumber}</TableCell>
+                    <TableCell>{acInfo.currentTemperature}°C</TableCell>
+                    <TableCell>{acInfo.targetTemperature}°C</TableCell>
+                    <TableCell>{acInfo.acStatus ? "开启" : "关闭"}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => {
+                          navigate(`/ac-control/${acInfo.roomNumber}`);
+                        }}
+                      >
+                      控制
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 
-export default MyComponent;
+export default AdminAcView;
+
