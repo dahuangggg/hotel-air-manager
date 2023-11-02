@@ -40,3 +40,37 @@ class updateAcInfo(APIView):
         })
         # except:
         #     return Response(status=status.HTTP_404_NOT_FOUND)
+
+class getAllAcInfo(APIView):
+    def post(self, request):
+        try:
+            user = User.objects.get(name=request.data['token'])
+            acs = Conditioner.objects.all()
+            acs_info = []
+            for ac in acs:
+                acs_info.append({
+                    'roomNumber': ac.room_number.name,
+                    'currentTemperature': ac.temperature_now,
+                    'targetTemperature': ac.temperature_set,
+                    'acStatus': ac.status,
+                    'acMode': ac.mode,
+                })
+            return Response({
+                'acs_info': acs_info,
+            }, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+class getAcInfoByRoomNumber(APIView):
+    def post(self, request):
+        try:
+            ac = Conditioner.objects.get(room_number=request.data['roomNumber'])
+            return Response({
+                'roomNumber': ac.room_number.name,
+                'currentTemperature': ac.temperature_now,
+                'targetTemperature': ac.temperature_set,
+                'acStatus': ac.status,
+                'acMode': ac.mode,
+            }, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
