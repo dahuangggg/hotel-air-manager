@@ -64,7 +64,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { setToken, setRoomsName, setBlockUI, setAcInfo } =
+export const { setToken, setRoomsName, setBlockUI, setAcInfo ,setAcInfos} =
   authSlice.actions;
 
 export const getToken = (state: RootState) => state.auth.token;
@@ -72,6 +72,7 @@ export const getRoomsName = (state: RootState) => state.auth.roomsName;
 export const getBlockUI = (state: RootState) => state.auth.blockUI;
 export const getAcInfo = (state: RootState) => state.auth.acInfo;
 export const getAcInfos = (state: RootState) => state.auth.acInfos;
+export const isLoggedin = (state: RootState) => !!state.auth.token;
 
 export const login =
   (name: string, password: string, navigate: NavigateFunction) =>
@@ -135,8 +136,8 @@ export const fetchAcInfos = () => async (dispatch: TypedDispatch) => {
         const url = "/api/conditioners/get_all_ac_info/";
         const token = localStorage.getItem("token");
         const { data } = await axios.post(url, { token });
-        const acInfos = data;
-        dispatch(setAcInfo(acInfos));
+        const acInfos = data.acs_info;
+        dispatch(setAcInfos(acInfos));
         dispatch(setBlockUI(false));
     } catch (error) {
         console.log(error);
