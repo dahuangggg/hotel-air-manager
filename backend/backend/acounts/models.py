@@ -6,6 +6,7 @@ class User(models.Model):
     name = models.CharField(max_length=20)
     # password为手机尾号后4位
     password = models.CharField(max_length=4)
+    cost = models.FloatField(blank=False, default=0)
 
     def __str__(self):
         return self.name

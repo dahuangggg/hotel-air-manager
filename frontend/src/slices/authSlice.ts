@@ -28,13 +28,6 @@ const initialState = {
     acStatus: false,
     acMode: "",
   } as AcInfoType,
-  acInfos: [{
-    roomNumber: "",
-    currentTemperature: 0,
-    targetTemperature: 0,
-    acStatus: false,
-    acMode: "",
-    }] as AcInfoType[],
 };
 
 const authSlice = createSlice({
@@ -58,20 +51,16 @@ const authSlice = createSlice({
     setAcInfo(state, action: PayloadAction<AcInfoType>) {
       state.acInfo = action.payload;
     },
-    setAcInfos(state, action: PayloadAction<AcInfoType[]>) {
-      state.acInfos = action.payload;
-    },
   },
 });
 
-export const { setToken, setRoomsName, setBlockUI, setAcInfo ,setAcInfos} =
+export const { setToken, setRoomsName, setBlockUI, setAcInfo } =
   authSlice.actions;
 
 export const getToken = (state: RootState) => state.auth.token;
 export const getRoomsName = (state: RootState) => state.auth.roomsName;
 export const getBlockUI = (state: RootState) => state.auth.blockUI;
 export const getAcInfo = (state: RootState) => state.auth.acInfo;
-export const getAcInfos = (state: RootState) => state.auth.acInfos;
 export const isLoggedin = (state: RootState) => !!state.auth.token;
 
 export const login =
@@ -128,21 +117,6 @@ export const fetchAcInfo = () => async (dispatch: TypedDispatch) => {
     console.log(error);
   }
 };
-
-export const fetchAcInfos = () => async (dispatch: TypedDispatch) => {
-    try {
-        dispatch(setBlockUI(true));
-
-        const url = "/api/conditioners/get_all_ac_info/";
-        const token = localStorage.getItem("token");
-        const { data } = await axios.post(url, { token });
-        const acInfos = data.acs_info;
-        dispatch(setAcInfos(acInfos));
-        dispatch(setBlockUI(false));
-    } catch (error) {
-        console.log(error);
-    }
-}
 
 export const updateAcInfo =
   (targetTemperature: number, acStatus: boolean, acMode: string) =>

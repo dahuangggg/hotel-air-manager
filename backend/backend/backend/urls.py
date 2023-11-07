@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from acounts import urls as acounts_urls
 from conditioners import urls as conditioners_urls
+from setup import urls as setup_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,3 +26,4 @@ urlpatterns = [
 
 urlpatterns += acounts_urls.acounts_urlpatterns
 urlpatterns += conditioners_urls.conditioners_urlpatterns
+urlpatterns += setup_urls.setup_urlpatterns

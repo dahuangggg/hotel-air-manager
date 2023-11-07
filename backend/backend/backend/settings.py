@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     # myapp
     'acounts',
     'conditioners',
+    'setup',
 ]
 
 MIDDLEWARE = [
