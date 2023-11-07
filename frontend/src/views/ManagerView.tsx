@@ -20,11 +20,10 @@ import { useAppDispatch } from "../store";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchAcInfos, getAcInfos, updateAcInfo } from "../slices/adminSlice";
 import { useNavigate, Link } from "react-router-dom";
-// import { increaseTemperature, decreaseTemperature, toggleAcStatus, handleAcModeChange } from './CustomerAcView';
 import NavigationBar from "./NavigationBar";
 import { toast } from "react-toastify";
 
-const AdminAcView: React.FC = () => {
+const ManagerAcView: React.FC = () => {
   const dispatch = useAppDispatch();
   // const navigate = useNavigate();
 
@@ -33,10 +32,6 @@ const AdminAcView: React.FC = () => {
   useEffect(() => {
     dispatch(fetchAcInfos());
   }, [dispatch]);
-
-  // const getAcInfoByRoomNumber = (roomNumber: string) => {
-  //   return allAcInfos.find((acInfo) => acInfo.roomNumber === roomNumber);
-  // };
 
   const handleAcStatusToggle = (roomNumber: string) => {
     const oddAcInfo = allAcInfos.find((acInfo) => acInfo.roomNumber === roomNumber);
@@ -47,28 +42,28 @@ const AdminAcView: React.FC = () => {
     dispatch(updateAcInfo(roomNumber, oddAcInfo.targetTemperature, !oddAcInfo.acStatus, oddAcInfo.acMode));
   };
 
-  // const handleModeChange = (
-  //   roomNumber: string,
-  //   e: SelectChangeEvent<string>,
-  // ) => {
-  //   const acInfo = getAcInfoByRoomNumber(roomNumber);
-  //   if (!acInfo) return; // 如果没有找到对应的信息，直接返回
+  const handleModeChange = (
+    roomNumber: string,
+    e: SelectChangeEvent<string>,
+  ) => {
+    const acInfo = allAcInfos.find((acInfo) => acInfo.roomNumber === roomNumber);
+    if (!acInfo) return; // 如果没有找到对应的信息，直接返回
 
-  //   const newAcMode = e.target.value as string;
-  //   dispatch(
-  //     updateAcInfo(acInfo.targetTemperature, acInfo.acStatus, newAcMode),
-  //   );
-  // };
+    const newAcMode = e.target.value as string;
+    dispatch(
+      updateAcInfo(roomNumber, acInfo.targetTemperature, acInfo.acStatus, newAcMode),
+    );
+  }
 
-  // const handleTemperatureChange = async (roomNumber: string, delta: number) => {
-  //   const acInfo = getAcInfoByRoomNumber(roomNumber);
-  //   if (!acInfo) return; // 如果没有找到对应的信息，直接返回
+    const handleTemperatureChange = async (roomNumber: string, delta: number) => {
+        const acInfo = allAcInfos.find((acInfo) => acInfo.roomNumber === roomNumber);
+        if (!acInfo) return; // 如果没有找到对应的信息，直接返回
 
-  //   const newTargetTemperature = (acInfo.targetTemperature || 0) + delta;
-  //   await dispatch(
-  //     updateAcInfo(newTargetTemperature, acInfo.acStatus, acInfo.acMode),
-  //   );
-  // };
+        const newTargetTemperature = (acInfo.targetTemperature || 0) + delta;
+        await dispatch(
+        updateAcInfo(roomNumber, newTargetTemperature, acInfo.acStatus, acInfo.acMode),
+        );
+    };
 
   return (
     <>
@@ -105,25 +100,25 @@ const AdminAcView: React.FC = () => {
                           size="small"
                           aria-label="small outlined button group"
                         >
-                          {/* <Button
+                          <Button
                             onClick={() =>
                               handleTemperatureChange(acInfo.roomNumber, -1)
                             }
                           >
                             -
-                          </Button> */}
+                          </Button>
                           <Button disabled>{acInfo.targetTemperature}°C</Button>
-                          {/* <Button
+                          <Button
                             onClick={() =>
                               handleTemperatureChange(acInfo.roomNumber, 1)
                             }
                           >
                             +
-                          </Button> */}
+                          </Button>
                         </ButtonGroup>
                       </TableCell>
                       <TableCell>
-                        {/* <Select
+                        <Select
                           value={acInfo.acMode}
                           onChange={(e) =>
                             handleModeChange(acInfo.roomNumber, e)
@@ -134,18 +129,17 @@ const AdminAcView: React.FC = () => {
                           <MenuItem value="低风速">低风速</MenuItem>
                           <MenuItem value="中风速">中风速</MenuItem>
                           <MenuItem value="高风速">高风速</MenuItem>
-                        </Select> */}
-                        {acInfo.acMode}
+                        </Select>
                       </TableCell>
                       <TableCell>
                         <Button
                           variant="contained"
-                          color={acInfo.acStatus ? "primary" : "secondary"}
+                          color={acInfo.acStatus ? "success" : "error"}
                           onClick={() =>
                             handleAcStatusToggle(acInfo.roomNumber)
                           }
                         >
-                          {acInfo.acStatus ? "关闭" : "打开"}
+                          {acInfo.acStatus ? "已开启" : "已关闭"}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -160,4 +154,4 @@ const AdminAcView: React.FC = () => {
   );
 };
 
-export default AdminAcView;
+export default ManagerAcView;
