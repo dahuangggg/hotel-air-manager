@@ -12,17 +12,22 @@ import {
   FormControl,
   Select,
   MenuItem,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
 
-import NavigationBar from "./NavigationBar";
+import NavigationBar from "../components/NavigationBar";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { useAppDispatch } from "../store";
 import { useSelector } from "react-redux";
 import { fetchAcInfo, getAcInfo, updateAcInfo } from "../slices/authSlice";
+import { getSettings } from "../slices/adminSlice";
+import { toast } from "react-toastify";
 
 const CustomerAcView: React.FC = () => {
   const dispatch = useAppDispatch();
   const acInfo = useSelector(getAcInfo);
+  const settings = useSelector(getSettings);
 
   const [roomNumber, setRoomNumber] = useState(acInfo?.roomNumber || "");
   const [currentTemperature, setCurrentTemperature] = useState(
@@ -33,19 +38,17 @@ const CustomerAcView: React.FC = () => {
   );
   const [acStatus, setAcStatus] = useState(acInfo?.acStatus || false);
   const [acMode, setAcMode] = useState(acInfo?.acMode || "低风速");
-  const [change, setchange] = useState(false);
 
   // 只用一次
   useEffect(() => {
-    if (acInfo && !change) {
-      setchange(true);
+    if (acInfo) {
       setRoomNumber(acInfo.roomNumber);
       setCurrentTemperature(acInfo.currentTemperature);
       setTargetTemperature(acInfo.targetTemperature);
       setAcStatus(acInfo.acStatus);
       setAcMode(acInfo.acMode);
     }
-  }, [acInfo, change]);
+  }, [acInfo]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,6 +56,17 @@ const CustomerAcView: React.FC = () => {
     };
     fetchData();
   }, [dispatch]);
+
+  // 定时器,每5秒执行一次
+  useEffect(() => {
+    // 创建一个定时器
+    const timerId = setInterval(() => {
+      dispatch(fetchAcInfo());
+    }, 5000);
+
+    // 返回一个清理函数，用于在组件卸载时清除定时器
+    return () => clearInterval(timerId);
+  }, []); // 空依赖数组，effect 只在组件挂载时执行一次
 
   useEffect(() => {
     if (targetTemperature === 0 || currentTemperature === 0) {
@@ -71,14 +85,14 @@ const CustomerAcView: React.FC = () => {
 
   // 增加温度
   const increaseTemperature = () => {
-    if (acStatus && targetTemperature < 30) {
+    if (acStatus && targetTemperature < settings.temperatureUpper) {
       setTargetTemperature(targetTemperature + 1);
     }
   };
 
   // 减少温度
   const decreaseTemperature = () => {
-    if (acStatus && targetTemperature > 18) {
+    if (acStatus && targetTemperature > settings.temperatureLower) {
       setTargetTemperature(targetTemperature - 1);
     }
   };
@@ -184,6 +198,41 @@ const CustomerAcView: React.FC = () => {
           </Grid>
         </Grid>
       </Container>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={!settings.status}
+      >
+        <Typography
+          variant="h4"
+          component="div"
+          sx={{
+            mt: 2,
+            backgroundColor: "rgba(0, 0, 0, 0.5)", // 深色半透明背景
+            color: "#fff", // 白色文本
+            padding: "20px", // 内边距
+            borderRadius: "10px", // 圆角边框
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.25)", // 轻微的阴影效果
+            fontWeight: "medium", // 字体权重
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column",
+            gap: "10px", // 元素间距
+            maxWidth: "400px", // 最大宽度
+            margin: "auto", // 水平居中
+          }}
+        >
+          <Box
+            component="span"
+            sx={{
+              fontSize: 60, // emoji字体大小
+            }}
+          >
+            🚫 
+          </Box>
+          主空调不可用
+        </Typography>
+      </Backdrop>
     </>
   );
 };

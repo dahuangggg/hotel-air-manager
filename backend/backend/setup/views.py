@@ -24,14 +24,21 @@ class SettingInfo(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
     def post(self, request):
         try:
-            setting = Settings.objects.get(id=0)
-            setting.status = request.data['status']
-            setting.temperature_upper = request.data['temperatureUpper']
-            setting.temperature_lower = request.data['temperatureLower']
-            setting.mode = request.data['mode']
-            setting.low_speed_fee = request.data['lowSpeedFee']
-            setting.mid_speed_fee = request.data['midSpeedFee']
-            setting.high_speed_fee = request.data['highSpeedFee']
+            setting = Settings.objects.get(id=1)
+            if 'status' in request.data:
+                setting.status = request.data['status']
+            if 'temperatureUpper' in request.data:
+                setting.temperature_upper = request.data['temperatureUpper']
+            if 'temperatureLower' in request.data:
+                setting.temperature_lower = request.data['temperatureLower']
+            if 'mode' in request.data:
+                setting.mode = request.data['mode']
+            if 'lowSpeedFee' in request.data:
+                setting.low_speed_fee = request.data['lowSpeedFee']
+            if 'midSpeedFee' in request.data:
+                setting.mid_speed_fee = request.data['midSpeedFee']
+            if 'highSpeedFee' in request.data:
+                setting.high_speed_fee = request.data['highSpeedFee']
             setting.save()
             return Response({
                 'status': setting.status,

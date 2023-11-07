@@ -2,6 +2,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState, TypedDispatch } from "../store";
 import { NavigateFunction } from "react-router-dom";
+import { useSelector } from "react-redux";
+import _ from "lodash";
 
 // 不考虑安全性,就用用户名当令牌算了
 let initToken: string | null = null;
@@ -103,20 +105,28 @@ export const fetchRoomsName = () => async (dispatch: TypedDispatch) => {
   }
 };
 
-export const fetchAcInfo = () => async (dispatch: TypedDispatch) => {
-  try {
-    dispatch(setBlockUI(true));
+export const fetchAcInfo =
+  () => async (dispatch: TypedDispatch, getState: () => RootState) => {
+    try {
+      // dispatch(setBlockUI(true));
 
-    const url = "/api/conditioners/get_ac_info/";
-    const token = localStorage.getItem("token");
-    const { data } = await axios.post(url, { token });
-    const acInfo = data;
-    dispatch(setAcInfo(acInfo));
-    dispatch(setBlockUI(false));
-  } catch (error) {
-    console.log(error);
-  }
-};
+      const oldAcInfo = getState().auth.acInfo; // 获取旧的acInfo状态
+
+      const url = "/api/conditioners/get_ac_info/";
+      const token = localStorage.getItem("token");
+      const { data } = await axios.post(url, { token });
+      const newAcInfo = data;
+
+      // 使用lodash的isEqual方法来进行深度比较
+      if (!_.isEqual(oldAcInfo, newAcInfo)) {
+        dispatch(setAcInfo(newAcInfo));
+      }
+
+      // dispatch(setBlockUI(false));
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
 export const updateAcInfo =
   (targetTemperature: number, acStatus: boolean, acMode: string) =>

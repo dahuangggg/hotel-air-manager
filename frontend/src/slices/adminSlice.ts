@@ -37,8 +37,8 @@ const initialState = {
     temperatureLower: 16,
     mode: "制冷",
     lowSpeedFee: 0.5,
-    midSpeedFee: 1,
-    highSpeedFee: 2,
+    midSpeedFee: 1.0,
+    highSpeedFee: 2.0,
   } as SettingsType,
 };
 
@@ -66,22 +66,23 @@ const adminSlice = createSlice({
 export const { setToken, setAcInfos, setSettings } = adminSlice.actions;
 
 export const getAcInfos = (state: RootState) => state.admin.acInfos;
+export const getSettings = (state: RootState) => state.admin.settings;
 
 export const fetchAcInfos = () => async (dispatch: TypedDispatch) => {
-    try {
-      dispatch(setBlockUI(true));
-  
-      const url = "/api/conditioners/get_all_ac_info/";
-      const token = localStorage.getItem("token");
-      const { data } = await axios.post(url, { token });
-      const acInfos = data.acs_info;
-      dispatch(setAcInfos(acInfos));
+  try {
+    dispatch(setBlockUI(true));
 
-      dispatch(setBlockUI(false));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    const url = "/api/conditioners/get_all_ac_info/";
+    const token = localStorage.getItem("token");
+    const { data } = await axios.post(url, { token });
+    const acInfos = data.acs_info;
+    dispatch(setAcInfos(acInfos));
+
+    dispatch(setBlockUI(false));
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export const updateAcInfo =
   (
@@ -95,7 +96,7 @@ export const updateAcInfo =
       dispatch(setBlockUI(true));
 
       const url = "/api/conditioners/admin_update_ac_info/";
-    //   const token = localStorage.getItem("token");
+      //   const token = localStorage.getItem("token");
 
       const { data } = await axios.post(url, {
         roomNumber: roomNumber,
@@ -113,16 +114,18 @@ export const updateAcInfo =
 
 export const fetchSettings = () => async (dispatch: TypedDispatch) => {
   try {
+    dispatch(setBlockUI(true));
     const url = "/api/setup/settingInfo";
     const { data } = await axios.get(url);
     dispatch(setSettings(data));
+    dispatch(setBlockUI(false));
   } catch (error) {
     console.log(error);
   }
 };
 
 export const updateSettings =
-  (settings: SettingsType) => async (dispatch: TypedDispatch) => {
+  (settings: Partial<SettingsType>) => async (dispatch: TypedDispatch) => {
     try {
       const url = "/api/setup/settingInfo";
       const { data } = await axios.post(url, settings);

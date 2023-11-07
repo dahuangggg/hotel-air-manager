@@ -18,17 +18,23 @@ import {
 } from "@mui/material";
 import { useAppDispatch } from "../store";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchAcInfos, getAcInfos, updateAcInfo } from "../slices/adminSlice";
-import { useNavigate, Link } from "react-router-dom";
-// import { increaseTemperature, decreaseTemperature, toggleAcStatus, handleAcModeChange } from './CustomerAcView';
-import NavigationBar from "./NavigationBar";
+import {
+  fetchAcInfos,
+  getAcInfos,
+  getSettings,
+  updateAcInfo,
+  updateSettings,
+} from "../slices/adminSlice";
+import NavigationBar from "../components/NavigationBar";
 import { toast } from "react-toastify";
+import AdminSettings from "../components/AdminSettings";
 
 const AdminAcView: React.FC = () => {
   const dispatch = useAppDispatch();
   // const navigate = useNavigate();
 
   const allAcInfos = useSelector(getAcInfos);
+  const settings = useSelector(getSettings);
 
   useEffect(() => {
     dispatch(fetchAcInfos());
@@ -39,12 +45,36 @@ const AdminAcView: React.FC = () => {
   // };
 
   const handleAcStatusToggle = (roomNumber: string) => {
-    const oddAcInfo = allAcInfos.find((acInfo) => acInfo.roomNumber === roomNumber);
-    if (!oddAcInfo){
+    const oddAcInfo = allAcInfos.find(
+      (acInfo) => acInfo.roomNumber === roomNumber,
+    );
+    if (!oddAcInfo) {
       toast.error("未知错误"); //新的调试工具,翻译为“面包框”
       return;
     }
-    dispatch(updateAcInfo(roomNumber, oddAcInfo.targetTemperature, !oddAcInfo.acStatus, oddAcInfo.acMode));
+    dispatch(
+      updateAcInfo(
+        roomNumber,
+        oddAcInfo.targetTemperature,
+        !oddAcInfo.acStatus,
+        oddAcInfo.acMode,
+      ),
+    );
+  };
+
+  const handStatusClick = () => {
+    toast.info("状态已更新");
+    dispatch(
+      updateSettings({
+        status: !settings.status,
+        mode: settings.mode,
+        temperatureUpper: settings.temperatureUpper,
+        temperatureLower: settings.temperatureLower,
+        lowSpeedFee: settings.lowSpeedFee,
+        midSpeedFee: settings.midSpeedFee,
+        highSpeedFee: settings.highSpeedFee,
+      }),
+    );
   };
 
   // const handleModeChange = (
@@ -70,6 +100,10 @@ const AdminAcView: React.FC = () => {
   //   );
   // };
 
+  if (!settings.status) {
+    return <AdminSettings />;
+  }
+
   return (
     <>
       <NavigationBar />
@@ -81,6 +115,9 @@ const AdminAcView: React.FC = () => {
           style={{ paddingTop: "16px", paddingBottom: "16px" }}
         >
           管理员空调信息
+          <Button variant="text" onClick={handStatusClick}>
+            {settings.status ? "开启" : "关闭"}
+          </Button>
         </Typography>
         <Card elevation={3}>
           <CardContent>
