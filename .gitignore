@@ -1,0 +1,14 @@
+# gitignore file
+
+**/__pycache__/
+*.pyc
+
+.idea/
+
+/backend/.env/
+/backend/.idea/
+/backend/backend/db.sqlite3
+
+/frontend/.idea/
+/frontend/node_modules/
+
