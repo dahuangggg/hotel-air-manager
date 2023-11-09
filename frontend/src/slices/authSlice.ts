@@ -17,6 +17,8 @@ export type AcInfoType = {
   targetTemperature: number;
   acStatus: boolean;
   acMode: string;
+  cost: number;
+  totalCost: number;
 };
 
 const initialState = {

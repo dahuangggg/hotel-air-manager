@@ -18,6 +18,8 @@ class getAcInfo(APIView):
                 'targetTemperature': ac.temperature_set,
                 'acStatus': ac.status,
                 'acMode': ac.mode,
+                'cost': ac.cost,
+                'totalCost': ac.total_cost,
             }, status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -37,6 +39,8 @@ class updateAcInfo(APIView):
                 'targetTemperature': ac.temperature_set,
                 'acStatus': ac.status,
                 'acMode': ac.mode,
+                'code': ac.cost,
+                'totalCost': ac.total_cost,
             })
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -54,6 +58,8 @@ class getAllAcInfo(APIView):
                     'targetTemperature': ac.temperature_set,
                     'acStatus': ac.status,
                     'acMode': ac.mode,
+                    'cost': ac.cost,
+                    'totalCost': ac.total_cost,
                 })
             return Response({
                 'acs_info': acs_info,
@@ -76,6 +82,8 @@ class adminUpdateAcInfo(APIView):
                 'targetTemperature': ac.temperature_set,
                 'acStatus': ac.status,
                 'acMode': ac.mode,
+                'code': ac.cost,
+                'totalCost': ac.total_cost,
             })
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)  

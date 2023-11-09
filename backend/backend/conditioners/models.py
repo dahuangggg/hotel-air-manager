@@ -21,5 +21,7 @@ class Conditioner(models.Model):
     room_number = models.OneToOneField(User, on_delete=models.CASCADE)
     # update次数
     update_times = models.IntegerField(blank=False, default=0)
-    # 费用
+    # 当前费用
     cost = models.FloatField(blank=False, default=0)
+    # 累计费用
+    total_cost = models.FloatField(blank=False, default=0)

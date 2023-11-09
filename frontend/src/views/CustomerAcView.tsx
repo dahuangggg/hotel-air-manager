@@ -23,6 +23,7 @@ import { useSelector } from "react-redux";
 import { fetchAcInfo, getAcInfo, updateAcInfo } from "../slices/authSlice";
 import { getSettings } from "../slices/adminSlice";
 import { toast } from "react-toastify";
+import CustomCostDetail from "../components/CustomCostDetail";
 
 const CustomerAcView: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -127,6 +128,9 @@ const CustomerAcView: React.FC = () => {
               <CardContent>
                 <Typography variant="h6" gutterBottom>
                   {roomNumber}
+                  <span style={{ float: "right" }}>
+                    <CustomCostDetail />
+                  </span>
                 </Typography>
                 <Divider style={{ margin: "10px 0" }} />
                 <Grid container spacing={2}>
@@ -144,13 +148,34 @@ const CustomerAcView: React.FC = () => {
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant="subtitle1" color="textSecondary">
+                      当前费率
+                    </Typography>
+                    <Typography variant="h4">{acMode==='低风速' && settings.lowSpeedFee}{acMode==='中风速' && settings.midSpeedFee}{acMode==='高风速' && settings.highSpeedFee} RMB/°C</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="subtitle1" color="textSecondary">
+                      已产生费用
+                    </Typography>
+                    <Typography variant="h4">{acInfo.cost.toFixed(2)}</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="subtitle1" color="textSecondary">
                       状态
                     </Typography>
                     <Typography
                       variant="h6"
                       color={acStatus ? "primary" : "error"}
                     >
-                      {acStatus ? "开启" : "关闭"}
+                                        <ButtonGroup
+                    color="primary"
+                    aria-label="outlined primary button group"
+                    variant="outlined"
+                    style={{ margin: "10px 0" }}
+                  >
+                    <Button onClick={toggleAcStatus}>
+                      {acStatus ? "关闭" : "打开"}
+                    </Button>
+                  </ButtonGroup>
                     </Typography>
                   </Grid>
                   <Grid item xs={6}>
@@ -163,6 +188,7 @@ const CustomerAcView: React.FC = () => {
                         onChange={handleAcModeChange}
                         displayEmpty
                         inputProps={{ "aria-label": "选择空调模式" }}
+                        sx={{ maxWidth: "200px" }}
                       >
                         <MenuItem value="低风速">低风速</MenuItem>
                         <MenuItem value="中风速">中风速</MenuItem>
@@ -181,16 +207,6 @@ const CustomerAcView: React.FC = () => {
                   >
                     <Button onClick={decreaseTemperature}>-</Button>
                     <Button onClick={increaseTemperature}>+</Button>
-                  </ButtonGroup>
-                  <ButtonGroup
-                    color="primary"
-                    aria-label="outlined primary button group"
-                    variant="outlined"
-                    style={{ margin: "10px 0" }}
-                  >
-                    <Button onClick={toggleAcStatus}>
-                      {acStatus ? "关闭" : "打开"}
-                    </Button>
                   </ButtonGroup>
                 </Box>
               </CardContent>
