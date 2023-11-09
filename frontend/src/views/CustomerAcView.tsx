@@ -21,9 +21,8 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import { useAppDispatch } from "../store";
 import { useSelector } from "react-redux";
 import { fetchAcInfo, getAcInfo, updateAcInfo } from "../slices/authSlice";
-import { getSettings } from "../slices/adminSlice";
-import { toast } from "react-toastify";
-import CustomCostDetail from "../components/CustomCostDetail";
+import { fetchSettings, getSettings } from "../slices/adminSlice";
+import { set } from "lodash";
 
 const CustomerAcView: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -39,6 +38,7 @@ const CustomerAcView: React.FC = () => {
   );
   const [acStatus, setAcStatus] = useState(acInfo?.acStatus || false);
   const [acMode, setAcMode] = useState(acInfo?.acMode || "低风速");
+  const cost = acInfo?.cost || 0;
 
   // 只用一次
   useEffect(() => {
@@ -54,6 +54,7 @@ const CustomerAcView: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       dispatch(fetchAcInfo());
+      dispatch(fetchSettings());
     };
     fetchData();
   }, [dispatch]);
@@ -80,8 +81,9 @@ const CustomerAcView: React.FC = () => {
     ) {
       return;
     }
-    dispatch(updateAcInfo(targetTemperature, acStatus, acMode));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const acI = {targetTemperature: targetTemperature, acStatus: acStatus, acMode: acMode}
+    dispatch(updateAcInfo(acI));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetTemperature, acStatus, acMode]);
 
   // 增加温度
@@ -129,7 +131,7 @@ const CustomerAcView: React.FC = () => {
                 <Typography variant="h6" gutterBottom>
                   {roomNumber}
                   <span style={{ float: "right" }}>
-                    <CustomCostDetail />
+                    {acInfo.queueStatus}
                   </span>
                 </Typography>
                 <Divider style={{ margin: "10px 0" }} />
@@ -156,7 +158,7 @@ const CustomerAcView: React.FC = () => {
                     <Typography variant="subtitle1" color="textSecondary">
                       已产生费用
                     </Typography>
-                    <Typography variant="h4">{acInfo.cost.toFixed(2)}</Typography>
+                    <Typography variant="h4">{cost.toFixed(2)}°C</Typography>
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant="subtitle1" color="textSecondary">
@@ -216,7 +218,7 @@ const CustomerAcView: React.FC = () => {
       </Container>
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={!settings.status}
+        open={settings?.status===false}
       >
         <Typography
           variant="h4"

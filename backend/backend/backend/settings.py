@@ -152,4 +152,8 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'conditioners.task.update_temperature',
         'schedule': 10.0,
     },
+    'update_conditioner_status': {
+        'task': 'conditioners.task.check_and_update_conditioner_status',
+        'schedule': 10.0,
+    },
 }

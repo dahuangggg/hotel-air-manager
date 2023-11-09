@@ -125,6 +125,7 @@ const ManagerAcView: React.FC = () => {
                     <TableCell>当前温度</TableCell>
                     <TableCell>目标温度</TableCell>
                     <TableCell>风速</TableCell>
+                    <TableCell>队列状态</TableCell>
                     <TableCell>当前费用</TableCell>
                     <TableCell>累计费用</TableCell>
                     <TableCell>状态</TableCell>
@@ -171,8 +172,9 @@ const ManagerAcView: React.FC = () => {
                           <MenuItem value="高风速">高风速</MenuItem>
                         </Select>
                       </TableCell>
-                      <TableCell>{acInfo.cost.toFixed(2)}元</TableCell>
-                      <TableCell>{(acInfo.cost + acInfo.totalCost).toFixed(2)}元</TableCell>
+                      <TableCell>{acInfo.queueStatus}</TableCell>
+                      <TableCell>{acInfo.cost?.toFixed(2)}元</TableCell>
+                      <TableCell>{(acInfo?.cost + acInfo?.totalCost).toFixed(2)}元</TableCell>
                       <TableCell>
                         <Button
                           variant="contained"

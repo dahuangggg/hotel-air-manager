@@ -6,6 +6,6 @@ from .models import Conditioner
 
 # Conditioner的自定义
 class ConditionerAdmin(admin.ModelAdmin):
-    list_display = ('room_number', 'temperature_now','update_times', 'temperature_set', 'mode','cost','total_cost', 'status')
+    list_display = ('room_number', 'temperature_now','update_times', 'temperature_set', 'mode','cost','total_cost','queue_status', 'status')
 
 admin.site.register(Conditioner, ConditionerAdmin)

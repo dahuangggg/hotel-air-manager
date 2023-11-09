@@ -9,6 +9,11 @@ class Conditioner(models.Model):
         ('中风速', '中风速'),
         ('高风速', '高风速'),
     )
+    STATUS_CHOICES = [
+        ('运行中', '运行中'),
+        ('等待中', '等待中'),
+        ('无事可做', '无事可做'),
+    ]
     # 当前温度
     temperature_now = models.IntegerField(blank=False, default=25)
     # 设置温度
@@ -25,3 +30,5 @@ class Conditioner(models.Model):
     cost = models.FloatField(blank=False, default=0)
     # 累计费用
     total_cost = models.FloatField(blank=False, default=0)
+    # 空调队列状态
+    queue_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='无事可做')

@@ -19,6 +19,7 @@ export type AcInfoType = {
   acMode: string;
   cost: number;
   totalCost: number;
+  queueStatus: string;
 };
 
 const initialState = {
@@ -131,7 +132,7 @@ export const fetchAcInfo =
   };
 
 export const updateAcInfo =
-  (targetTemperature: number, acStatus: boolean, acMode: string) =>
+  (acInfo: Partial<AcInfoType>) =>
   async (dispatch: TypedDispatch) => {
     try {
       dispatch(setBlockUI(true));
@@ -139,12 +140,7 @@ export const updateAcInfo =
       const url = "/api/conditioners/update_ac_info/";
       const token = localStorage.getItem("token");
 
-      const { data } = await axios.post(url, {
-        token: token,
-        targetTemperature: targetTemperature,
-        acStatus: acStatus,
-        acMode: acMode,
-      });
+      const { data } = await axios.post(url, acInfo, { params: { token } });
       dispatch(setAcInfo(data));
 
       dispatch(setBlockUI(false));
