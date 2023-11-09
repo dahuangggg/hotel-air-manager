@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'acounts',
     'conditioners',
     'setup',
+    'log',
 ]
 
 MIDDLEWARE = [
@@ -154,6 +155,6 @@ CELERY_BEAT_SCHEDULE = {
     },
     'update_conditioner_status': {
         'task': 'conditioners.task.check_and_update_conditioner_status',
-        'schedule': 10.0,
+        'schedule': 20.0,
     },
 }
