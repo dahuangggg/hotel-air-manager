@@ -132,8 +132,7 @@ export const fetchAcInfo =
   };
 
 export const updateAcInfo =
-  (acInfo: Partial<AcInfoType>) =>
-  async (dispatch: TypedDispatch) => {
+  (acInfo: Partial<AcInfoType>) => async (dispatch: TypedDispatch) => {
     try {
       dispatch(setBlockUI(true));
 

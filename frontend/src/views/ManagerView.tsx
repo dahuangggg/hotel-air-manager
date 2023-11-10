@@ -77,24 +77,38 @@ const ManagerAcView: React.FC = () => {
     roomNumber: string,
     e: SelectChangeEvent<string>,
   ) => {
-    const acInfo = allAcInfos.find((acInfo) => acInfo.roomNumber === roomNumber);
+    const acInfo = allAcInfos.find(
+      (acInfo) => acInfo.roomNumber === roomNumber,
+    );
     if (!acInfo) return; // 如果没有找到对应的信息，直接返回
 
     const newAcMode = e.target.value as string;
     dispatch(
-      updateAcInfo(roomNumber, acInfo.targetTemperature, acInfo.acStatus, newAcMode),
+      updateAcInfo(
+        roomNumber,
+        acInfo.targetTemperature,
+        acInfo.acStatus,
+        newAcMode,
+      ),
     );
-  }
+  };
 
-    const handleTemperatureChange = async (roomNumber: string, delta: number) => {
-        const acInfo = allAcInfos.find((acInfo) => acInfo.roomNumber === roomNumber);
-        if (!acInfo) return; // 如果没有找到对应的信息，直接返回
+  const handleTemperatureChange = async (roomNumber: string, delta: number) => {
+    const acInfo = allAcInfos.find(
+      (acInfo) => acInfo.roomNumber === roomNumber,
+    );
+    if (!acInfo) return; // 如果没有找到对应的信息，直接返回
 
-        const newTargetTemperature = (acInfo.targetTemperature || 0) + delta;
-        await dispatch(
-        updateAcInfo(roomNumber, newTargetTemperature, acInfo.acStatus, acInfo.acMode),
-        );
-    };
+    const newTargetTemperature = (acInfo.targetTemperature || 0) + delta;
+    await dispatch(
+      updateAcInfo(
+        roomNumber,
+        newTargetTemperature,
+        acInfo.acStatus,
+        acInfo.acMode,
+      ),
+    );
+  };
 
   if (!settings.status) {
     return <AdminSettings />;
@@ -174,7 +188,9 @@ const ManagerAcView: React.FC = () => {
                       </TableCell>
                       <TableCell>{acInfo.queueStatus}</TableCell>
                       <TableCell>{acInfo.cost?.toFixed(2)}元</TableCell>
-                      <TableCell>{(acInfo?.cost + acInfo?.totalCost).toFixed(2)}元</TableCell>
+                      <TableCell>
+                        {(acInfo?.cost + acInfo?.totalCost).toFixed(2)}元
+                      </TableCell>
                       <TableCell>
                         <Button
                           variant="contained"

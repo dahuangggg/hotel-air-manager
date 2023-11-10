@@ -81,9 +81,13 @@ const CustomerAcView: React.FC = () => {
     ) {
       return;
     }
-    const acI = {targetTemperature: targetTemperature, acStatus: acStatus, acMode: acMode}
+    const acI = {
+      targetTemperature: targetTemperature,
+      acStatus: acStatus,
+      acMode: acMode,
+    };
     dispatch(updateAcInfo(acI));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetTemperature, acStatus, acMode]);
 
   // 增加温度
@@ -130,9 +134,7 @@ const CustomerAcView: React.FC = () => {
               <CardContent>
                 <Typography variant="h6" gutterBottom>
                   {roomNumber}
-                  <span style={{ float: "right" }}>
-                    {acInfo.queueStatus}
-                  </span>
+                  <span style={{ float: "right" }}>{acInfo.queueStatus}</span>
                 </Typography>
                 <Divider style={{ margin: "10px 0" }} />
                 <Grid container spacing={2}>
@@ -152,7 +154,11 @@ const CustomerAcView: React.FC = () => {
                     <Typography variant="subtitle1" color="textSecondary">
                       当前费率
                     </Typography>
-                    <Typography variant="h4">{acMode==='低风速' && settings.lowSpeedFee}{acMode==='中风速' && settings.midSpeedFee}{acMode==='高风速' && settings.highSpeedFee} RMB/°C</Typography>
+                    <Typography variant="h4">
+                      {acMode === "低风速" && settings.lowSpeedFee}
+                      {acMode === "中风速" && settings.midSpeedFee}
+                      {acMode === "高风速" && settings.highSpeedFee} RMB/°C
+                    </Typography>
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant="subtitle1" color="textSecondary">
@@ -168,16 +174,16 @@ const CustomerAcView: React.FC = () => {
                       variant="h6"
                       color={acStatus ? "primary" : "error"}
                     >
-                                        <ButtonGroup
-                    color="primary"
-                    aria-label="outlined primary button group"
-                    variant="outlined"
-                    style={{ margin: "10px 0" }}
-                  >
-                    <Button onClick={toggleAcStatus}>
-                      {acStatus ? "关闭" : "打开"}
-                    </Button>
-                  </ButtonGroup>
+                      <ButtonGroup
+                        color="primary"
+                        aria-label="outlined primary button group"
+                        variant="outlined"
+                        style={{ margin: "10px 0" }}
+                      >
+                        <Button onClick={toggleAcStatus}>
+                          {acStatus ? "关闭" : "打开"}
+                        </Button>
+                      </ButtonGroup>
                     </Typography>
                   </Grid>
                   <Grid item xs={6}>
@@ -218,7 +224,7 @@ const CustomerAcView: React.FC = () => {
       </Container>
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={settings?.status===false}
+        open={settings?.status === false}
       >
         <Typography
           variant="h4"
@@ -246,7 +252,7 @@ const CustomerAcView: React.FC = () => {
               fontSize: 60, // emoji字体大小
             }}
           >
-            🚫 
+            🚫
           </Box>
           主空调不可用
         </Typography>
