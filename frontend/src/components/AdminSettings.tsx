@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import NavigationBar from "../components/NavigationBar";
+import NavigationBar from "./NavigationBar/NavigationBar";
 import { useSelector } from "react-redux";
 import {
   fetchSettings,
@@ -49,8 +49,10 @@ const AdminSettings = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ my: 4 }}>
+    // <Container maxWidth="md" sx={{ my: 4 }}>
+      <>
       <NavigationBar />
+        <Container maxWidth="md" sx={{ my: 4 }}>
       <Typography variant="h4" gutterBottom>
         你好,管理员
       </Typography>
@@ -130,6 +132,7 @@ const AdminSettings = () => {
         </CardContent>
       </Card>
     </Container>
+        </>
   );
 };
 

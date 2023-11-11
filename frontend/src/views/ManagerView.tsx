@@ -25,7 +25,7 @@ import {
   updateAcInfo,
   updateSettings,
 } from "../slices/adminSlice";
-import NavigationBar from "../components/NavigationBar";
+import NavigationBar from "../components/NavigationBar/NavigationBar";
 import { toast } from "react-toastify";
 import AdminSettings from "../components/AdminSettings";
 

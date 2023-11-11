@@ -16,7 +16,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 
-import NavigationBar from "../components/NavigationBar";
+import NavigationBar from "../components/NavigationBar/NavigationBar";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { useAppDispatch } from "../store";
 import { useSelector } from "react-redux";
