@@ -17,7 +17,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useAppDispatch } from "../store";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector} from "react-redux";
 import {
   fetchAcInfos,
   getAcInfos,
@@ -103,6 +103,7 @@ const ManagerAcView: React.FC = () => {
   return (
     <>
       <NavigationBar />
+      <div style={{ height: "64px" }} />
       <Container>
         <Typography
           variant="h4"
@@ -148,7 +149,7 @@ const ManagerAcView: React.FC = () => {
                           >
                             -
                           </Button>
-                          <Button disabled>{acInfo.targetTemperature}°C</Button>
+                          <Button variant="outlined">{acInfo.targetTemperature}°C</Button>
                           <Button
                             onClick={() =>
                               handleTemperatureChange(acInfo.roomNumber, 1)
@@ -178,7 +179,7 @@ const ManagerAcView: React.FC = () => {
                       <TableCell>
                         <Button
                           variant="contained"
-                          color={acInfo.acStatus ? "success" : "error"}
+                          color={acInfo.acStatus ? "info" : "inherit"}
                           onClick={() =>
                             handleAcStatusToggle(acInfo.roomNumber)
                           }
