@@ -180,3 +180,12 @@ celery -A backend beat -l info
 你怎么知道我昨天魔法工艺一命通关😋管理员功能差不多了,接下来用celery做一个队列任务,实现最多为三名用户服务,用户的数量将变为10个,然后后端做一个日志功能,前端做一个日志显示界面,就可以了.</br></br>
 队列任务似乎完成了,日志功能完成了以后一起测试</br></br>
 还有前台和酒店经理的前端没做</br>
+
+## 2023/11/11
+介绍一个好玩的调试工具,django-extension,可以用来生成模型图,命令如下
+```
+python manage.py graph_models -a -o my_project_model_diagram.png
+```
+生成的图片如下
+![Alt text](doc/plantuml/my_project_model_diagram.png)
+上传了第三次实验的文档模板,uml图用的plantuml,可以用vscode的插件生成,具体方法见[这里](https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml)

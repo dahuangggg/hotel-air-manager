@@ -7,3 +7,6 @@ celery==5.3.4 # 处理定时任务
 redis==5.0.1 # 作为celery的broker
 django-redis==5.4.0
 django-celery-beat==2.5.0
+# UML建模工具,不需要在生产环境中使用
+# django-extensions==3.2.3
+# pygraphviz==1.11
