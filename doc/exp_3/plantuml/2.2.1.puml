@@ -1,0 +1,60 @@
+@startuml
+control Timer
+actor Customer
+database AC_System
+
+note right of AC_System
+  AcInfo的定义:
+  export type AcInfoType = {
+    roomNumber: string; // 房间号
+    currentTemperature: number; // 当前温度
+    targetTemperature: number; // 目标温度
+    acStatus: boolean; // 空调开关状态
+    acMode: string; // 空调风速模式
+    cost: number; // 当前消费
+    queueStatus: string; // 空调队列状态
+  };
+end note
+
+Customer -> AC_System : fetchRoomsName()
+activate AC_System
+AC_System --> Customer : return : roomsName
+deactivate AC_System
+
+Customer -> AC_System : login(username, password)
+activate AC_System
+AC_System --> Customer : return : token
+deactivate AC_System
+
+loop 使用空调
+    Customer -> AC_System : updateAcInfo(targetTemperature, acStatus, acMode)
+    activate AC_System
+    AC_System --> Customer : return : acInfo(new)
+    deactivate AC_System
+
+    Customer -> AC_System : fetchAcInfo(roomNumber)
+    activate AC_System
+    AC_System --> Customer : return : acInfo
+    deactivate AC_System
+end
+
+loop 定时更新空调面板
+    Customer -> Timer : setTimer(10秒)
+    activate Customer
+    activate Timer
+    ... 10秒之后 ...
+    Timer -> Customer : timeout()
+    deactivate Timer
+    Customer -> AC_System : fetchAcInfo(roomNumber)
+    deactivate Customer
+    activate AC_System
+    AC_System -> Customer : return : acInfo
+    deactivate AC_System
+end
+
+Customer -> Customer : logout()
+activate Customer
+Customer --> Customer : setToken(null)
+deactivate Customer
+
+@enduml
