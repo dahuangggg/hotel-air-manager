@@ -189,3 +189,7 @@ python manage.py graph_models -a -o my_project_model_diagram.png
 生成的图片如下
 ![Alt text](doc/plantuml/my_project_model_diagram.png)
 上传了第三次实验的文档模板,uml图用的plantuml,可以用vscode的插件生成,具体方法见[这里](https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml)
+
+## 2023/11/12
+
+更新UI.

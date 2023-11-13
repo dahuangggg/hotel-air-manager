@@ -13,16 +13,14 @@ import {
   Select,
   MenuItem,
   Backdrop,
-  CircularProgress,
 } from "@mui/material";
 
-import NavigationBar from "../components/NavigationBar";
+import NavigationBar from "../components/NavigationBar/NavigationBar";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { useAppDispatch } from "../store";
 import { useSelector } from "react-redux";
 import { fetchAcInfo, getAcInfo, updateAcInfo } from "../slices/authSlice";
 import { fetchSettings, getSettings } from "../slices/adminSlice";
-import { set } from "lodash";
 
 const CustomerAcView: React.FC = () => {
   const dispatch = useAppDispatch();

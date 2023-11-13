@@ -17,7 +17,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useAppDispatch } from "../store";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector} from "react-redux";
 import {
   fetchAcInfos,
   getAcInfos,
@@ -25,7 +25,7 @@ import {
   updateAcInfo,
   updateSettings,
 } from "../slices/adminSlice";
-import NavigationBar from "../components/NavigationBar";
+import NavigationBar from "../components/NavigationBar/NavigationBar";
 import { toast } from "react-toastify";
 import AdminSettings from "../components/AdminSettings";
 
@@ -74,39 +74,39 @@ const ManagerAcView: React.FC = () => {
   };
 
   const handleModeChange = (
-    roomNumber: string,
-    e: SelectChangeEvent<string>,
+      roomNumber: string,
+      e: SelectChangeEvent<string>,
   ) => {
     const acInfo = allAcInfos.find(
-      (acInfo) => acInfo.roomNumber === roomNumber,
+        (acInfo) => acInfo.roomNumber === roomNumber
     );
     if (!acInfo) return; // 如果没有找到对应的信息，直接返回
 
     const newAcMode = e.target.value as string;
     dispatch(
-      updateAcInfo(
-        roomNumber,
-        acInfo.targetTemperature,
-        acInfo.acStatus,
-        newAcMode,
-      ),
+        updateAcInfo(
+            roomNumber,
+            acInfo.targetTemperature,
+            acInfo.acStatus,
+            newAcMode
+        ),
     );
   };
 
   const handleTemperatureChange = async (roomNumber: string, delta: number) => {
     const acInfo = allAcInfos.find(
-      (acInfo) => acInfo.roomNumber === roomNumber,
+        (acInfo) => acInfo.roomNumber === roomNumber
     );
     if (!acInfo) return; // 如果没有找到对应的信息，直接返回
 
     const newTargetTemperature = (acInfo.targetTemperature || 0) + delta;
     await dispatch(
-      updateAcInfo(
-        roomNumber,
-        newTargetTemperature,
-        acInfo.acStatus,
-        acInfo.acMode,
-      ),
+        updateAcInfo(
+            roomNumber,
+            newTargetTemperature,
+            acInfo.acStatus,
+            acInfo.acMode
+        ),
     );
   };
 
@@ -117,6 +117,7 @@ const ManagerAcView: React.FC = () => {
   return (
     <>
       <NavigationBar />
+      <div style={{ height: "64px" }} />
       <Container>
         <Typography
           variant="h4"
@@ -162,7 +163,7 @@ const ManagerAcView: React.FC = () => {
                           >
                             -
                           </Button>
-                          <Button disabled>{acInfo.targetTemperature}°C</Button>
+                          <Button variant="outlined">{acInfo.targetTemperature}°C</Button>
                           <Button
                             onClick={() =>
                               handleTemperatureChange(acInfo.roomNumber, 1)
@@ -194,7 +195,7 @@ const ManagerAcView: React.FC = () => {
                       <TableCell>
                         <Button
                           variant="contained"
-                          color={acInfo.acStatus ? "success" : "error"}
+                          color={acInfo.acStatus ? "info" : "inherit"}
                           onClick={() =>
                             handleAcStatusToggle(acInfo.roomNumber)
                           }
