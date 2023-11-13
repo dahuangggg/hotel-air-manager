@@ -2,7 +2,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState, TypedDispatch } from "../store";
 import { NavigateFunction } from "react-router-dom";
-import { useSelector } from "react-redux";
 import _ from "lodash";
 
 // 不考虑安全性,就用用户名当令牌算了

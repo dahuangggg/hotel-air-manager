@@ -193,3 +193,6 @@ python manage.py graph_models -a -o my_project_model_diagram.png
 ## 2023/11/12
 
 更新UI.
+
+## 2023/11/14
+cxr的任务安排了,在README_CHEN.md,xzm的明天再说吧

@@ -1,8 +1,8 @@
-import React from 'react';
-import Slider from 'react-slick';
-import "slick-carousel/slick/slick.css"; 
+import React from "react";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import './Carousel.css';
+import "./Carousel.css";
 
 const Carousel = () => {
   // 轮播图设置
@@ -29,10 +29,8 @@ const Carousel = () => {
           <img src="/carousel/room.png" alt="Image 3" />
         </div>
       </Slider>
-
     </div>
   );
-}
+};
 
 export default Carousel;
-

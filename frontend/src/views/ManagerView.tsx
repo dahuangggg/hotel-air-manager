@@ -17,7 +17,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useAppDispatch } from "../store";
-import { useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 import {
   fetchAcInfos,
   getAcInfos,
@@ -74,39 +74,39 @@ const ManagerAcView: React.FC = () => {
   };
 
   const handleModeChange = (
-      roomNumber: string,
-      e: SelectChangeEvent<string>,
+    roomNumber: string,
+    e: SelectChangeEvent<string>,
   ) => {
     const acInfo = allAcInfos.find(
-        (acInfo) => acInfo.roomNumber === roomNumber
+      (acInfo) => acInfo.roomNumber === roomNumber,
     );
     if (!acInfo) return; // 如果没有找到对应的信息，直接返回
 
     const newAcMode = e.target.value as string;
     dispatch(
-        updateAcInfo(
-            roomNumber,
-            acInfo.targetTemperature,
-            acInfo.acStatus,
-            newAcMode
-        ),
+      updateAcInfo(
+        roomNumber,
+        acInfo.targetTemperature,
+        acInfo.acStatus,
+        newAcMode,
+      ),
     );
   };
 
   const handleTemperatureChange = async (roomNumber: string, delta: number) => {
     const acInfo = allAcInfos.find(
-        (acInfo) => acInfo.roomNumber === roomNumber
+      (acInfo) => acInfo.roomNumber === roomNumber,
     );
     if (!acInfo) return; // 如果没有找到对应的信息，直接返回
 
     const newTargetTemperature = (acInfo.targetTemperature || 0) + delta;
     await dispatch(
-        updateAcInfo(
-            roomNumber,
-            newTargetTemperature,
-            acInfo.acStatus,
-            acInfo.acMode
-        ),
+      updateAcInfo(
+        roomNumber,
+        newTargetTemperature,
+        acInfo.acStatus,
+        acInfo.acMode,
+      ),
     );
   };
 
@@ -163,7 +163,9 @@ const ManagerAcView: React.FC = () => {
                           >
                             -
                           </Button>
-                          <Button variant="outlined">{acInfo.targetTemperature}°C</Button>
+                          <Button variant="outlined">
+                            {acInfo.targetTemperature}°C
+                          </Button>
                           <Button
                             onClick={() =>
                               handleTemperatureChange(acInfo.roomNumber, 1)

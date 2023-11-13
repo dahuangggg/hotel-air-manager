@@ -121,3 +121,35 @@ class adminUpdateAcInfo(APIView):
         }, status=status.HTTP_200_OK)
         # except:
         #     return Response(status=status.HTTP_404_NOT_FOUND)  
+
+class receptionGetRoomNumbers(APIView):
+    def get(self, request):
+        try:
+            # 这里是xzm要做的
+            roomNumber = {
+                "房间101": True,
+                "房间102": False,
+                "房间103": True,
+                "房间104": False,
+                "房间105": False,
+                "房间106": True,
+                "房间107": False,
+                "房间108": True,
+                "房间109": False,
+                "房间110": False,
+            };
+            return Response({
+                'room_numbers': roomNumber,
+            }, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+class receptionRegisterForCustom(APIView):
+    def post(self, request):
+        try:
+            password = request.data['password']
+            room_number = request.data['room_number']
+            # 这里是xzm要做的
+            return Response(status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
