@@ -1,9 +1,9 @@
 用入住登记给你做个示范</br>
 找到这个路径下的文件,frontend/src/components/ReceptionCheckIn.tsx
 ![Alt text](frontend/public/readme/image.png)
-目前它在前端渲染的效果是ReceptionCheckIn这几个字:
+</br>目前它在前端渲染的效果是ReceptionCheckIn这几个字:
 ![Alt text](frontend/public/readme/image-1.png)
-你要做的是修改这个文件,比如我通过mui官网复制了一段stepper的代码,然后把它粘贴到了这个文件里,然后你就可以在localhost:3000/ReceptionCheckIn,点击checkIn看到效果了
+</br>你要做的是修改这个文件,比如我通过mui官网复制了一段stepper的代码,然后把它粘贴到了这个文件里,然后你就可以在localhost:3000/ReceptionCheckIn,点击checkIn看到效果了
 ![Alt text](frontend/public/readme/image-2.png)
 再借助chatgpt和自己的修改,最后如下
 ```
@@ -493,4 +493,3 @@ const ReceptionCheckIn = () => {
 ### 第二个
 其实和第一个一样,帮你实现了,自己看最终代码吧,你目前的任务是修改ReceptionCheckOut.tsx,熟悉一下ts,react,mui,ReceptionFeeDetail.tsx的写完以后再说</br>
 happpy coding
-![Alt text](frontend/public/readme/image-8.png)
