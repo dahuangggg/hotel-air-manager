@@ -1,7 +1,7 @@
 用入住登记给你做个示范</br>
 找到这个路径下的文件,frontend/src/components/ReceptionCheckIn.tsx
 ![Alt text](frontend/public/readme/image.png)
-</br>目前它在前端渲染的效果是ReceptionCheckIn这几个字:
+</br>目前它在前端渲染的效果是ReceptionCheckIn这几个字:</br>
 ![Alt text](frontend/public/readme/image-1.png)
 </br>你要做的是修改这个文件,比如我通过mui官网复制了一段stepper的代码,然后把它粘贴到了这个文件里,然后你就可以在localhost:3000/ReceptionCheckIn,点击checkIn看到效果了
 ![Alt text](frontend/public/readme/image-2.png)
