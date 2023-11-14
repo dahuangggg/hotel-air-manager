@@ -195,4 +195,8 @@ python manage.py graph_models -a -o my_project_model_diagram.png
 更新UI.
 
 ## 2023/11/14
-cxr的任务安排了,在README_CHEN.md,xzm的明天再说吧
+cxr的任务安排了,在README_CHEN.md,xzm的明天再说吧</br>
+xzm的任务安排了,在README_XU.md,提醒大家在写代码之前一定要pull最新的分支,在主目录下
+```
+git pull
+```
