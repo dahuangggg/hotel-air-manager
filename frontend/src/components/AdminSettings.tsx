@@ -52,7 +52,7 @@ const AdminSettings = () => {
     // <Container maxWidth="md" sx={{ my: 4 }}>
     <>
       <div style={{ height: "64px" }}></div>
-      <NavigationBar />
+      <NavigationBar breadcrumbs={null} />
       <Container maxWidth="md" sx={{ my: 4 }}>
         <Typography variant="h4" gutterBottom>
           你好,管理员

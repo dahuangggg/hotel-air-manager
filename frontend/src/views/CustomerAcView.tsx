@@ -114,7 +114,7 @@ const CustomerAcView: React.FC = () => {
 
   return (
     <>
-      <NavigationBar />
+      <NavigationBar breadcrumbs={null} />
       <Container>
         <Grid container spacing={3} justifyContent="center">
           <Grid item xs={12}>
@@ -122,7 +122,7 @@ const CustomerAcView: React.FC = () => {
               variant="h4"
               align="center"
               gutterBottom
-              style={{ paddingTop: "16px", paddingBottom: "16px" }}
+              style={{ paddingTop: "120px", paddingBottom: "10px" }}
             >
               空调操控系统
             </Typography>

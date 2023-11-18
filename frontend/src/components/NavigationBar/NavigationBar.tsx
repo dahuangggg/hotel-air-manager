@@ -13,7 +13,11 @@ import { useSelector } from "react-redux";
 import { isLoggedin } from "../../slices/authSlice";
 import "./NavigationBar.css";
 
-const NavigationBar: React.FC = () => {
+type Props={
+  breadcrumbs:JSX.Element|null
+}
+
+const NavigationBar: React.FC<Props> = ({breadcrumbs}) => {
   const navigate = useNavigate();
   const isLoggedIn = useSelector(isLoggedin);
 
@@ -38,6 +42,7 @@ const NavigationBar: React.FC = () => {
         }}
       >
         <Toolbar>
+          {breadcrumbs}
           <Box sx={{ flexGrow: 0, marginRight: 40 }}></Box>
           <Box sx={{ flexGrow: 0, marginRight: 8 }}>
             <Typography variant="h6" component="div">

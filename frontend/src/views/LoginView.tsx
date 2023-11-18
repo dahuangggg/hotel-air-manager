@@ -36,7 +36,7 @@ const LoginView: React.FC = () => {
 
   return (
     <>
-      <NavigationBar />
+      <NavigationBar breadcrumbs={null} />
       <Grid
         container
         justifyContent="center"

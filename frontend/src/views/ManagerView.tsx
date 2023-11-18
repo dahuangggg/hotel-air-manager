@@ -116,7 +116,7 @@ const ManagerAcView: React.FC = () => {
 
   return (
     <>
-      <NavigationBar />
+      <NavigationBar breadcrumbs={null} />
       <div style={{ height: "64px" }} />
       <Container>
         <Typography

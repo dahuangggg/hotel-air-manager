@@ -125,10 +125,7 @@ class adminUpdateAcInfo(APIView):
 class receptionGetRoomNumbers(APIView):
     def get(self, request):
         try:
-            # 这里是xzm要做的
-            # 这里你要先遍历每一种空调的日志,找到与'入住/结算'相关的,看看空调的最新的一条log
-            # 是入住还是结算,如果是结算,那么就是空调的状态是空闲,如果是入住,那么就是空调的状态是繁忙
-            # 最后得到的应该是如下面roomNumber一样的数据
+            
             roomNumber = {
                 "房间101": True,
                 "房间102": False,

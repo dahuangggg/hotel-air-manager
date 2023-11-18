@@ -29,7 +29,6 @@ const ReceptionFeeDetail: React.FC = () => {
 
   return (
     <>
-      <NavigationBar />
       <div style={{ height: "64px" }}></div>
       <Container>
         <Typography

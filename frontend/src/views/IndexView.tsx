@@ -13,7 +13,7 @@ import NavigationBar from "../components/NavigationBar/NavigationBar";
 const IndexView: React.FC = () => {
   return (
     <>
-      <NavigationBar />
+      <NavigationBar breadcrumbs={null} />
       <img
         src="/index.jpg" // 更换为你的图片路径
         alt="描述" // 添加适当的alt描述
@@ -40,8 +40,8 @@ const IndexView: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
-              padding: "20px",
-              textAlign: "right",
+              padding: "100px",
+              textAlign: "left",
             }}
           >
             <h1 className="fw-bold mb-5">波普特酒店</h1>
@@ -64,6 +64,7 @@ const IndexView: React.FC = () => {
             <Carousel />
           </div>
         </div>
+        
         <section>
           <div className="container bg-primary-gradient py-5">
             <div className="row">
