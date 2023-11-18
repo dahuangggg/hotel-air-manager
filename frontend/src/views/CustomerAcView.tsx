@@ -179,7 +179,7 @@ const CustomerAcView: React.FC = () => {
                         style={{ margin: "10px 0" }}
                       >
                         <Button onClick={toggleAcStatus}>
-                          {acStatus ? "关闭" : "打开"}
+                          {acStatus ? "打开" : "关闭"}
                         </Button>
                       </ButtonGroup>
                     </Typography>

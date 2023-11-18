@@ -14,17 +14,16 @@ import {
 } from "@mui/material";
 import { useAppDispatch } from "../store";
 import { useSelector } from "react-redux";
-import { fetchAcInfos, getAcInfos } from "../slices/adminSlice";
 import { useNavigate } from "react-router-dom";
-import NavigationBar from "../components/NavigationBar/NavigationBar";
+import { fetchDetail, getDetail } from "../slices/receptionSlice";
 
 const ReceptionFeeDetail: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const allAcInfos = useSelector(getAcInfos);
+  const details = useSelector(getDetail)
 
   useEffect(() => {
-    dispatch(fetchAcInfos());
+    dispatch(fetchDetail());
   }, [dispatch]);
 
   return (
@@ -35,7 +34,7 @@ const ReceptionFeeDetail: React.FC = () => {
           variant="h4"
           align="center"
           gutterBottom
-          style={{ paddingTop: "16px", paddingBottom: "16px" }}
+          style={{ paddingTop: "25px", paddingBottom: "16px" }}
         >
           前台空调信息
         </Typography>
@@ -46,70 +45,37 @@ const ReceptionFeeDetail: React.FC = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell>房间号</TableCell>
-                    <TableCell>当前温度</TableCell>
-                    <TableCell>目标温度</TableCell>
-                    <TableCell>风速</TableCell>
-                    <TableCell>状态</TableCell>
-                    <TableCell>详情</TableCell>
+                    <TableCell>开关次数</TableCell>
+                    <TableCell>调度次数</TableCell>
+                    <TableCell>详单条数</TableCell>
+                    <TableCell>调温次数</TableCell>
+                    <TableCell>调风次数</TableCell>
+                    <TableCell>请求时长</TableCell>
+                    <TableCell>总费用</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {allAcInfos.map((acInfo) => (
-                    <TableRow key={acInfo.roomNumber}>
-                      <TableCell>{acInfo.roomNumber}</TableCell>
-                      <TableCell>{acInfo.currentTemperature}°C</TableCell>
-                      <TableCell>
-                        <span
-                          style={{
-                            color:
-                              acInfo.targetTemperature ===
-                              acInfo.currentTemperature
-                                ? "black"
-                                : acInfo.targetTemperature >
-                                    acInfo.currentTemperature
-                                  ? "red"
-                                  : "blue", // 默认颜色
-                          }}
-                        >
-                          {acInfo.targetTemperature}°C
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span
-                          style={{
-                            color:
-                              acInfo.acMode === "高风速"
-                                ? "red"
-                                : acInfo.acMode === "中风速"
-                                  ? "orange"
-                                  : acInfo.acMode === "低风速"
-                                    ? "green"
-                                    : "black", // 默认颜色
-                          }}
-                        >
-                          {acInfo.acMode}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span
-                          style={{
-                            color: acInfo.acStatus ? "blue" : "gray",
-                          }}
-                        >
-                          {acInfo.acStatus ? "已开启" : "已关闭"}
-                        </span>
-                      </TableCell>
-                      <TableCell>
+                  {details.map((detail) => (
+                    <TableRow key={detail.roomNumber}>
+                      <TableCell>{detail.roomNumber}</TableCell>
+                      <TableCell>{detail.on_off_times}</TableCell>
+                      <TableCell>{detail.dispatch_times}</TableCell>
+                      <TableCell>{detail.detail_times}</TableCell>
+                      <TableCell>{detail.temperature_times}</TableCell>
+                      <TableCell>{detail.mode_times}</TableCell>
+                      <TableCell>{detail.request_time.toFixed(1)} s</TableCell>
+                      <TableCell>{detail.total_cost}</TableCell>
+                      {/* <TableCell>
                         <Button
                           variant="text"
                           color="primary"
                           onClick={() => {
-                            navigate(`/reception`);
+                            dispatch(fetchDetail());
                           }}
                         >
-                          查看
+                          刷新
                         </Button>
-                      </TableCell>
+                      </TableCell> */}
                     </TableRow>
                   ))}
                 </TableBody>

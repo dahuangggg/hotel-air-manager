@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from acounts.models import User
 from rest_framework import status
 from .models import Settings
+from conditioners.models import Conditioner
+from log.views import write_log
 
 # Create your views here.
 
@@ -26,6 +28,12 @@ class SettingInfo(APIView):
         try:
             setting = Settings.objects.get(id=1)
             if 'status' in request.data:
+                # if setting.status != request.data['status'] & setting.status:
+                #     for ac in Conditioner.objects.all():
+                #         if ac.queue_status != '无事可做':
+                #             ac.queue_status  = '无事可做'
+                #             ac.save()
+                #             write_log('调度','系统',ac,'管理员关闭主控机,服务结束')
                 setting.status = request.data['status']
             if 'temperatureUpper' in request.data:
                 setting.temperature_upper = request.data['temperatureUpper']

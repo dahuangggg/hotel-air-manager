@@ -3,6 +3,7 @@ from .models import Conditioner
 from setup.models import Settings
 from django.db import transaction
 from log.models import Log
+from log.views import write_log
 
 MAX_RUNNING_CONDITIONERS = 3
 
@@ -36,7 +37,7 @@ def update_temperature():
     for ac in acs:
         # 空调的状态为开机时
         if ac.status == False:
-            if ac.queue_status != '无事可做':
+            if (ac.queue_status!='无事可做'):
                 write_log('调度', '系统', ac, remark = '空调已经关闭,服务结束')
                 write_log('结束服务', '客户', ac, '空调已经关闭,服务结束')
                 ac.queue_status = '无事可做'
@@ -64,7 +65,6 @@ def update_temperature():
             update_times = ac.update_times
             cost = ac.cost
             queue_status = ac.queue_status
-
             # 当温度没有稳定时，根据模式更新温度
             if current_temperature > target_temperature:
                 if mode == '低风速':

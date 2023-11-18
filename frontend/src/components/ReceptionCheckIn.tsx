@@ -11,12 +11,11 @@ import StepConnector, {
   stepConnectorClasses,
 } from "@mui/material/StepConnector";
 import { StepIconProps } from "@mui/material/StepIcon";
-import { Button, Grid, Input, Paper, TextField } from "@mui/material";
+import { Button, Grid, Paper } from "@mui/material";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { fetchRoomNumbers, getRoomNumbers, registerForCustomer } from "../slices/receptionSlice";
 import { useAppDispatch } from "../store";
-import { set } from "lodash";
 
 const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -91,7 +90,7 @@ const steps = ["选择房间号", "修改密码", "登记完成"];
 const ReceptionCheckIn = () => {
   const dispatch = useAppDispatch();
   const [activeStep, setActiveStep] = useState(0);
-  const roomNumber = useSelector(getRoomNumbers); // <--这里修改了
+  const roomNumber = useSelector(getRoomNumbers);
   const [password, setPassword] = useState(["", "", "", ""]);
   const [selectedRoom, setSelectedRoom] = useState("");
   const inputRefs = useRef<Array<HTMLInputElement | null>>([
@@ -101,7 +100,7 @@ const ReceptionCheckIn = () => {
     null,
   ]);
 
-  useEffect(() => { // <--这里修改了,增加了一个钩子,用于获取房间号
+  useEffect(() => {
     if (activeStep === 0)
     {
       dispatch(fetchRoomNumbers());
@@ -114,9 +113,7 @@ const ReceptionCheckIn = () => {
     setPassword(newPassword);
 
     if (newPassword.every((val) => val !== "")) {
-      // toast.success("密码设置成功");
-      dispatch(registerForCustomer(selectedRoom, newPassword.join(""))); // <--这里修改了,增加了一个钩子,用于获取房间号
-      // toast.success(f"房间号:{select}, 密码:{newPassword.join("")}")
+      dispatch(registerForCustomer(selectedRoom, newPassword.join("")));
       toast.success(`房间号:${selectedRoom}, 密码:${newPassword.join("")}`);
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
@@ -163,7 +160,6 @@ const ReceptionCheckIn = () => {
         height: "80vh",
       }}
     >
-      {/* 放置其他内容 */}
       {activeStep === 0 && (
         <Paper
           elevation={3}
@@ -273,7 +269,6 @@ const ReceptionCheckIn = () => {
           </Button>
         </Paper>
       )}
-      {/* Stepper放在底部 */}
       <div
         style={{
           position: "absolute",
