@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Typography,
@@ -11,20 +11,31 @@ import {
   TableRow,
   Card,
   CardContent,
+  Box,
 } from "@mui/material";
 import { useAppDispatch } from "../store";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { fetchDetail, getDetail } from "../slices/receptionSlice";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+
+import MonitorNumbers from "./MonitorNumbers";
 
 const ReceptionFeeDetail: React.FC = () => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const details = useSelector(getDetail)
+  const details = useSelector(getDetail);
+  const [selectedStartDateTime, setSelectedStartDateTime] = useState(null);
+  const [selectedEndDateTime, setSelectedEndDateTime] = useState(null);
 
   useEffect(() => {
     dispatch(fetchDetail());
   }, [dispatch]);
+
+  // const handleNowButtonClick = (setSelectedDateTime:React.Dispatch<React.SetStateAction<null>>) => {
+  //   setSelectedDateTime(new Date()); // 设置当前时间
+  // };
 
   return (
     <>
@@ -41,6 +52,54 @@ const ReceptionFeeDetail: React.FC = () => {
         <Card elevation={3}>
           <CardContent>
             <TableContainer>
+              <Box display="flex" justifyContent="space-between">
+                <Box marginRight={0}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={["DateTimePicker"]}>
+                      <DateTimePicker
+                        slotProps={{
+                          actionBar: {
+                            actions: ["today", "accept", "cancel"],
+                          },
+                        }}
+                        label="开始时间"
+                        value={selectedStartDateTime}
+                        onChange={(newValue) => {
+                          setSelectedStartDateTime(newValue);
+                        }}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
+                </Box>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DateTimePicker"]}>
+                    <DateTimePicker
+                      slotProps={{
+                        actionBar: {
+                          actions: ["today", "accept", "cancel"],
+                        },
+                      }}
+                      label="结束时间"
+                      value={selectedEndDateTime}
+                      onChange={(newValue) => {
+                        setSelectedEndDateTime(newValue);
+                      }}
+                    />
+                  </DemoContainer>
+                </LocalizationProvider>
+                <Box>
+                  <Button
+                    variant="text"
+                    color="primary"
+                    onClick={() => {
+                      console.log(selectedStartDateTime);
+                      console.log(selectedEndDateTime);
+                    }}
+                  >
+                    给我搜
+                  </Button>
+                </Box>
+              </Box>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -84,6 +143,22 @@ const ReceptionFeeDetail: React.FC = () => {
           </CardContent>
         </Card>
 
+        <Box marginTop={5}>
+          <MonitorNumbers
+            // on_off_times={details.reduce((a, b) => a + b.on_off_times, 0)}
+            // dispatch_times={details.reduce((a, b) => a + b.dispatch_times, 0)}
+            // detail_times={details.reduce((a, b) => a + b.detail_times, 0)}
+            // temperature_times={details.reduce(
+            //   (a, b) => a + b.temperature_times,
+            //   0,
+            // )}
+            // mode_times={details.reduce((a, b) => a + b.mode_times, 0)}
+            // request_time={parseFloat(
+            //   details.reduce((a, b) => a + b.request_time, 0).toFixed(1),
+            // )}
+            details={details}
+          />
+        </Box>
         <div style={{ height: "64px" }}></div>
         <div className="row">
           <div className="col-lg-7 col-xl-8">

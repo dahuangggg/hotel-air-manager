@@ -193,3 +193,24 @@ class getAcInfo(APIView):
         }, status=status.HTTP_200_OK)
         # except:
         #     return Response(status=status.HTTP_404_NOT_FOUND)
+
+class getAllLogs(APIView):
+    def get(self, request):
+        try:
+            logs = Log.objects.all()
+            logs = logs.order_by('-time')
+            # logs = logs[:20]
+            log_list = []
+            for log in logs:
+                log_list.append({
+                    'type': log.type,
+                    'operator': log.operator,
+                    'object': log.object.room_number.name,
+                    'time': log.time,
+                    'remark': log.remark,
+                })
+            return Response({
+                'log': log_list,
+            }, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)

@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  Typography,
-  Breadcrumbs as MUIBreadcrumbs,
-  Box,
-} from "@mui/material";
+import { Typography, Breadcrumbs as MUIBreadcrumbs, Box } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
 import ReceptionCheckIn from "../components/ReceptionCheckIn";
@@ -19,7 +15,7 @@ const ReceptionView: React.FC = () => {
   );
 
   const renderComponent = () => {
-    console.log(activeComponent)
+    console.log(activeComponent);
     switch (activeComponent) {
       case "check-in":
         return <ReceptionCheckIn />;
@@ -63,97 +59,97 @@ const ReceptionView: React.FC = () => {
       <NavigationBar breadcrumbs={breadcrumbs} />
 
       {!activeComponent ? (
-    <div>
-    <div className="container">
-      <div className="pricing-header p-5 px-5 mx-5 pb-md-4 text-center">
-        <h1 className="display-4 fw-normal mt-5">前台管理系统</h1>
-      </div>
-    </div>
-    <div className="container">
-      <div className="row">
-        <div className="row row-cols-1 row-cols-md-3 mb-3 mt-5 text-center">
-          <div className="col-md-3 offset-md-1">
-            <div className="card mb-4 rounded-3 shadow-sm">
-              <div className="card-header py-3">
-                <h4 className="my-0 fw-normal">入住登记</h4>
-              </div>
-              <div className="card-body">
-                <h1 className="card-title pricing-card-title">
-                  xx<small className="text-muted fw-light">xx</small>
-                </h1>
-                <ul className="list-unstyled mt-3 mb-4">
-                  <li>xxxxxx</li>
-
-                  <li>xxxxxx</li>
-                </ul>
-                <button
-                  type="button"
-                  className="w-100 btn btn-lg btn-outline-primary"
-                  onClick={(e) => {
-                    handleButtonClick('check-in');
-                  }}
-                >
-                  前往
-                </button>
-              </div>
+        <div>
+          <div className="container">
+            <div className="pricing-header p-5 px-5 mx-5 pb-md-4 text-center">
+              <h1 className="display-4 fw-normal mt-5">前台管理系统</h1>
             </div>
           </div>
-          <div className="col-md-3 offset-md-1">
-            <div className="card mb-4 rounded-3 shadow-sm">
-              <div className="card-header py-3">
-                <h4 className="my-0 fw-normal">离店结账</h4>
-              </div>
-              <div className="card-body">
-                <h1 className="card-title pricing-card-title">
-                  xx<small className="text-muted fw-light">xx</small>
-                </h1>
-                <ul className="list-unstyled mt-3 mb-4">
-                  <li>xxxx</li>
+          <div className="container">
+            <div className="row">
+              <div className="row row-cols-1 row-cols-md-3 mb-3 mt-5 text-center">
+                <div className="col-md-3 offset-md-1">
+                  <div className="card mb-4 rounded-3 shadow-sm">
+                    <div className="card-header py-3">
+                      <h4 className="my-0 fw-normal">入住登记</h4>
+                    </div>
+                    <div className="card-body">
+                      <h1 className="card-title pricing-card-title">
+                        xx<small className="text-muted fw-light">xx</small>
+                      </h1>
+                      <ul className="list-unstyled mt-3 mb-4">
+                        <li>xxxxxx</li>
 
-                  <li>xxxx</li>
-                </ul>
-                <button
-                  type="button"
-                  className="w-100 btn btn-lg btn-outline-primary"
-                  onClick={(e) => {
-                    handleButtonClick('check-out');
-                  }}
-                >
-                  前往
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-3 offset-md-1">
-            <div className="card mb-4 rounded-3 shadow-sm">
-              <div className="card-header py-3">
-                <h4 className="my-0 fw-normal">查看报表</h4>
-              </div>
-              <div className="card-body">
-                <h1 className="card-title pricing-card-title">
-                  xx<small className="text-muted fw-light">xx</small>
-                </h1>
-                <ul className="list-unstyled mt-3 mb-4">
-                  <li>xxxx</li>
+                        <li>xxxxxx</li>
+                      </ul>
+                      <button
+                        type="button"
+                        className="w-100 btn btn-lg btn-outline-primary"
+                        onClick={(e) => {
+                          handleButtonClick("check-in");
+                        }}
+                      >
+                        前往
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-3 offset-md-1">
+                  <div className="card mb-4 rounded-3 shadow-sm">
+                    <div className="card-header py-3">
+                      <h4 className="my-0 fw-normal">离店结账</h4>
+                    </div>
+                    <div className="card-body">
+                      <h1 className="card-title pricing-card-title">
+                        xx<small className="text-muted fw-light">xx</small>
+                      </h1>
+                      <ul className="list-unstyled mt-3 mb-4">
+                        <li>xxxx</li>
 
-                  <li>xxxx</li>
-                </ul>
-                <button
-                  type="button"
-                  className="w-100 btn btn-lg btn-outline-primary"
-                  onClick={(e) => {
-                    handleButtonClick('fee-detail');
-                  }}
-                >
-                  前往
-                </button>
+                        <li>xxxx</li>
+                      </ul>
+                      <button
+                        type="button"
+                        className="w-100 btn btn-lg btn-outline-primary"
+                        onClick={(e) => {
+                          handleButtonClick("check-out");
+                        }}
+                      >
+                        前往
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-3 offset-md-1">
+                  <div className="card mb-4 rounded-3 shadow-sm">
+                    <div className="card-header py-3">
+                      <h4 className="my-0 fw-normal">查看报表</h4>
+                    </div>
+                    <div className="card-body">
+                      <h1 className="card-title pricing-card-title">
+                        xx<small className="text-muted fw-light">xx</small>
+                      </h1>
+                      <ul className="list-unstyled mt-3 mb-4">
+                        <li>xxxx</li>
+
+                        <li>xxxx</li>
+                      </ul>
+                      <button
+                        type="button"
+                        className="w-100 btn btn-lg btn-outline-primary"
+                        onClick={(e) => {
+                          handleButtonClick("fee-detail");
+                        }}
+                      >
+                        前往
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
       ) : (
         renderComponent()
       )}

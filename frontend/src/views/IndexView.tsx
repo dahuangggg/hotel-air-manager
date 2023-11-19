@@ -64,7 +64,7 @@ const IndexView: React.FC = () => {
             <Carousel />
           </div>
         </div>
-        
+
         <section>
           <div className="container bg-primary-gradient py-5">
             <div className="row">

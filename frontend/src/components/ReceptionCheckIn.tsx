@@ -14,7 +14,11 @@ import { StepIconProps } from "@mui/material/StepIcon";
 import { Button, Grid, Paper } from "@mui/material";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { fetchRoomNumbers, getRoomNumbers, registerForCustomer } from "../slices/receptionSlice";
+import {
+  fetchRoomNumbers,
+  getRoomNumbers,
+  registerForCustomer,
+} from "../slices/receptionSlice";
 import { useAppDispatch } from "../store";
 
 const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
@@ -101,11 +105,10 @@ const ReceptionCheckIn = () => {
   ]);
 
   useEffect(() => {
-    if (activeStep === 0)
-    {
+    if (activeStep === 0) {
       dispatch(fetchRoomNumbers());
     }
-  }, [dispatch ,activeStep]);
+  }, [dispatch, activeStep]);
 
   const handlePasswordChange = (index: number, value: string) => {
     const newPassword = [...password];
