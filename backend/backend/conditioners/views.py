@@ -156,12 +156,57 @@ class receptionRegisterForCustom(APIView):
     @transaction.atomic
     def post(self, request):
         try:
+            # 防止check in非空闲的空调
+            roomNumber = {}
+            for conditioners in Conditioner.objects.all():
+                roomNumber[conditioners.room_number.name] = True
+            for log in Log.objects.filter(Q(type='入住') | Q(type='结算')):
+                if log.type == '入住':
+                    roomNumber[log.object.room_number.name] = False
+                else:
+                    roomNumber[log.object.room_number.name] = True
+
             password = request.data['password']
             room_number = request.data['room_number']
+            if not roomNumber[room_number]:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
             user = User.objects.get(name=room_number)
             user.password = password
             user.save()
             write_log('入住', '前台', user.conditioner, remark='无')
+            return Response(status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+class receptionCheckOutForCustom(APIView):
+    @transaction.atomic
+    def post(self, request):
+        try:
+            # 防止check out空闲的空调
+            roomNumber = {}
+            for conditioners in Conditioner.objects.all():
+                roomNumber[conditioners.room_number.name] = True
+            for log in Log.objects.filter(Q(type='入住') | Q(type='结算')):
+                if log.type == '入住':
+                    roomNumber[log.object.room_number.name] = False
+                else:
+                    roomNumber[log.object.room_number.name] = True
+
+            room_number = request.data['room_number']
+            if roomNumber[room_number]:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            user = User.objects.get(name=room_number)
+            user.password = ''
+            user.save()
+            write_log('结算', '前台', user.conditioner, remark='无')
+            # 更新空调的状态
+            ac = user.conditioner
+            ac.status = False
+            ac.temperature_set = 25
+            ac.mode = '低风速'
+            ac.total_cost += ac.cost
+            ac.cost = 0
+            ac.save()
             return Response(status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)

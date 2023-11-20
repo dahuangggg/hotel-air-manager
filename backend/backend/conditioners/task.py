@@ -86,8 +86,8 @@ def update_temperature():
                 current_temperature += 1
                 if current_temperature == target_temperature:
                     queue_status = '无事可做'
-                    write_log('调度', '系统', ac, remark = f'当前温度{ac.temperature_now}°C 等于设置温度{ac.temperature_set}°C ,运行态转为闲置态')
-                    write_log('结束服务', '客户', ac)
+                    write_log('调度', '系统', ac, remark = f'当前温度{current_temperature}°C 等于设置温度{target_temperature}°C ,运行态转为闲置态')
+                    write_log('结束服务', '客户', ac, f'温度已达标,当前温度' + str(current_temperature) + '°C,目标温度' + str(target_temperature) + '°C,当前模式' + str(ac.mode) + ',服务结束')
                     check_and_update_conditioner_status()
                 if mode == '低风速':
                     cost += setting.low_speed_fee
@@ -102,8 +102,8 @@ def update_temperature():
                 current_temperature -= 1
                 if current_temperature == target_temperature:
                     queue_status = '无事可做'
-                    write_log('调度', '系统', ac, remark = f'当前温度{ac.temperature_now}°C 等于设置温度{ac.temperature_set}°C ,运行态转为闲置态')
-                    write_log('结束服务', '客户', ac)
+                    write_log('调度', '系统', ac, remark = f'当前温度{current_temperature}°C 等于设置温度{target_temperature}°C ,运行态转为闲置态')
+                    write_log('结束服务', '客户', ac, f'温度已达标,当前温度' + str(current_temperature) + '°C,目标温度' + str(target_temperature) + '°C,当前模式' + str(ac.mode) + ',服务结束')
                     check_and_update_conditioner_status()
                 if mode == '低风速':
                     cost += setting.low_speed_fee

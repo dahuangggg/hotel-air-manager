@@ -8,4 +8,5 @@ conditioners_urlpatterns = [
     path('api/conditioners/admin_update_ac_info/', views.adminUpdateAcInfo.as_view(), name='admin_update_ac_info'),
     path('api/conditioners/reception_get_room_number/', views.receptionGetRoomNumbers.as_view(), name='reception_get_room_number'),
     path('api/conditioners/reception_register_for_customer/', views.receptionRegisterForCustom.as_view(), name='reception_register_for_customer'),
+    path('api/conditioners/reception_check_out_for_customer/', views.receptionCheckOutForCustom.as_view(),name='reception_check_out_for_customer'),
 ]

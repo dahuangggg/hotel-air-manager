@@ -24,14 +24,12 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-const MonitorNumbers: React.FC<Props> = ({
-  details
-}) => {
-  let on_off_times = details.reduce((a, b) => a + b.on_off_times, 0)
-  let dispatch_times = details.reduce((a, b) => a + b.dispatch_times, 0)
-  let detail_times = details.reduce((a, b) => a + b.detail_times, 0)
-  let temperature_times = details.reduce((a, b) => a + b.temperature_times, 0)
-  let mode_times = details.reduce((a, b) => a + b.mode_times, 0)
+const MonitorNumbers: React.FC<Props> = ({ details }) => {
+  let on_off_times = details.reduce((a, b) => a + b.on_off_times, 0);
+  let dispatch_times = details.reduce((a, b) => a + b.dispatch_times, 0);
+  let detail_times = details.reduce((a, b) => a + b.detail_times, 0);
+  let temperature_times = details.reduce((a, b) => a + b.temperature_times, 0);
+  let mode_times = details.reduce((a, b) => a + b.mode_times, 0);
   let request_time = parseFloat(
     details.reduce((a, b) => a + b.request_time, 0).toFixed(1),
   );
@@ -64,13 +62,13 @@ const MonitorNumbers: React.FC<Props> = ({
                     xAxis={[
                       {
                         id: "barCategories",
-                        data:details.map((detail) => detail.roomNumber),
+                        data: details.map((detail) => detail.roomNumber),
                         scaleType: "band",
                       },
                     ]}
                     series={[
                       {
-                        data:details.map((detail) => detail.on_off_times),
+                        data: details.map((detail) => detail.on_off_times),
                       },
                     ]}
                     width={500}
@@ -103,13 +101,13 @@ const MonitorNumbers: React.FC<Props> = ({
                     xAxis={[
                       {
                         id: "barCategories",
-                        data:details.map((detail) => detail.roomNumber),
+                        data: details.map((detail) => detail.roomNumber),
                         scaleType: "band",
                       },
                     ]}
                     series={[
                       {
-                        data:details.map((detail) => detail.dispatch_times),
+                        data: details.map((detail) => detail.dispatch_times),
                       },
                     ]}
                     width={500}
@@ -142,13 +140,13 @@ const MonitorNumbers: React.FC<Props> = ({
                     xAxis={[
                       {
                         id: "barCategories",
-                        data:details.map((detail) => detail.roomNumber),
+                        data: details.map((detail) => detail.roomNumber),
                         scaleType: "band",
                       },
                     ]}
                     series={[
                       {
-                        data:details.map((detail) => detail.detail_times),
+                        data: details.map((detail) => detail.detail_times),
                       },
                     ]}
                     width={500}
@@ -181,13 +179,13 @@ const MonitorNumbers: React.FC<Props> = ({
                     xAxis={[
                       {
                         id: "barCategories",
-                        data:details.map((detail) => detail.roomNumber),
+                        data: details.map((detail) => detail.roomNumber),
                         scaleType: "band",
                       },
                     ]}
                     series={[
                       {
-                        data:details.map((detail) => detail.temperature_times),
+                        data: details.map((detail) => detail.temperature_times),
                       },
                     ]}
                     width={500}
@@ -198,7 +196,8 @@ const MonitorNumbers: React.FC<Props> = ({
             >
               <Item>
                 <Typography variant="subtitle1">调温次数</Typography>
-                {temperature_times !== undefined && temperature_times !== null ? (
+                {temperature_times !== undefined &&
+                temperature_times !== null ? (
                   <Typography variant="h4">
                     {temperature_times.toLocaleString()}
                   </Typography>
@@ -220,13 +219,13 @@ const MonitorNumbers: React.FC<Props> = ({
                     xAxis={[
                       {
                         id: "barCategories",
-                        data:details.map((detail) => detail.roomNumber),
+                        data: details.map((detail) => detail.roomNumber),
                         scaleType: "band",
                       },
                     ]}
                     series={[
                       {
-                        data:details.map((detail) => detail.mode_times),
+                        data: details.map((detail) => detail.mode_times),
                       },
                     ]}
                     width={500}
@@ -259,13 +258,13 @@ const MonitorNumbers: React.FC<Props> = ({
                     xAxis={[
                       {
                         id: "barCategories",
-                        data:details.map((detail) => detail.roomNumber),
+                        data: details.map((detail) => detail.roomNumber),
                         scaleType: "band",
                       },
                     ]}
                     series={[
                       {
-                        data:details.map((detail) => detail.request_time),
+                        data: details.map((detail) => detail.request_time),
                       },
                     ]}
                     width={500}

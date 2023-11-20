@@ -94,6 +94,7 @@ export const registerForCustomer =
       dispatch(fetchRoomNumbers());
       dispatch(setBlockUI(false));
     } catch (error) {
+      dispatch(setBlockUI(false));
       console.log(error);
       toast.error("登记失败");
     }
@@ -119,5 +120,21 @@ export const fetchAllLogs = () => async (dispatch: TypedDispatch) => {
     console.log(error);
   }
 };
+
+export const checkOutForCustomer =
+  (roomNumber: string) => async (dispatch: TypedDispatch) => {
+    try {
+      const url = "/api/conditioners/reception_check_out_for_customer/";
+      dispatch(setBlockUI(true)); // 设置阻塞
+      await axios.post(url, { room_number: roomNumber });
+      toast.success("退房成功");
+      dispatch(fetchRoomNumbers());
+      dispatch(setBlockUI(false));
+    } catch (error) {
+      dispatch(setBlockUI(false));
+      console.log(error);
+      toast.error("退房失败");
+    }
+  };
 
 export default receiptionSlice.reducer;
