@@ -162,7 +162,7 @@ const CustomerAcView: React.FC = () => {
                     <Typography variant="subtitle1" color="textSecondary">
                       已产生费用
                     </Typography>
-                    <Typography variant="h4">{cost.toFixed(2)}°C</Typography>
+                    <Typography variant="h4">{cost.toFixed(2)}元</Typography>
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant="subtitle1" color="textSecondary">
@@ -195,6 +195,7 @@ const CustomerAcView: React.FC = () => {
                         displayEmpty
                         inputProps={{ "aria-label": "选择空调模式" }}
                         sx={{ maxWidth: "200px" }}
+                        disabled={!acStatus}
                       >
                         <MenuItem value="低风速">低风速</MenuItem>
                         <MenuItem value="中风速">中风速</MenuItem>

@@ -111,90 +111,93 @@ def write_log(type, operator, ac, remark='无', request=None, up = True):
 
 class getAcInfo(APIView):
     def get(self, request):
-        # try:
-        Logs = Log.objects.all()
-        conditioners = Conditioner.objects.all()
-        detail = {}
-        for conditioner in conditioners:
-            detail[conditioner.room_number.name] = {
-                'roomNumber': conditioner.room_number.name,
-                # 开关次数
-                'on_off_times': 0,
-                # 调度次数
-                'dispatch_times': 0,
-                # 详单条数
-                'detail_times': 0,
-                # 调温次数
-                'temperature_times': 0,
-                # 调风次数
-                'mode_times': 0,
-                # 请求时长
-                'request_time': 0,
-                # 总费用
-                'total_cost': 0,
-            }
-        # 开关次数
-        logs = Logs.filter(type='开关机')
-        for log in logs:
-            ac = log.object
-            detail[ac.room_number.name]['on_off_times'] += 1
-        logs = Logs.filter(type='调度')
-        for log in logs:
-            ac = log.object
-            detail[ac.room_number.name]['dispatch_times'] += 1
-        logs = Logs.filter(type='请求详单')
-        for log in logs:
-            ac = log.object
-            detail[ac.room_number.name]['detail_times'] +=1
-        logs = Logs.filter(type='调温')
-        for log in logs:
-            ac = log.object
-            detail[ac.room_number.name]['temperature_times'] +=1
-        logs = Logs.filter(type='调风')
-        for log in logs:
-            ac = log.object
-            detail[ac.room_number.name]['mode_times'] +=1
-        # 请求时长
-        for conditioner in conditioners:
-            # 获取与当前conditioner相关的请求服务的Log对象
-            related_logs = Logs.filter(object=conditioner, type='请求服务')
-            # 计算请求时长
-            request_time = timedelta()
-            # 计算请求时长的总和
-            for log in related_logs:
-                end_service_log = Logs.filter(object=conditioner, type='结束服务', time__gt=log.time).first()
-                if end_service_log:
-                    request_time += end_service_log.time - log.time
-                else:
-                    # 将log.time转换为具有相同时区信息的datetime对象
-                    log_time_with_timezone = log.time.replace(tzinfo=timezone.get_current_timezone())
+        try:
+            Logs = Log.objects.all()
+            conditioners = Conditioner.objects.all()
+            detail = {}
+            for conditioner in conditioners:
+                detail[conditioner.room_number.name] = {
+                    'roomNumber': conditioner.room_number.name,
+                    # 开关次数
+                    'on_off_times': 0,
+                    # 调度次数
+                    'dispatch_times': 0,
+                    # 详单条数
+                    'detail_times': 0,
+                    # 调温次数
+                    'temperature_times': 0,
+                    # 调风次数
+                    'mode_times': 0,
+                    # 请求时长
+                    'request_time': 0,
+                    # 总费用
+                    'total_cost': 0,
+                }
+            # 开关次数
+            logs = Logs.filter(type='开关机')
+            for log in logs:
+                ac = log.object
+                detail[ac.room_number.name]['on_off_times'] += 1
+            # 调度次数
+            logs = Logs.filter(type='调度')
+            for log in logs:
+                ac = log.object
+                detail[ac.room_number.name]['dispatch_times'] += 1
+            # 详单条数
+            for log in Logs:
+                ac = log.object
+                detail[ac.room_number.name]['detail_times'] +=1
+            # 调温次数
+            logs = Logs.filter(type='调温')
+            for log in logs:
+                ac = log.object
+                detail[ac.room_number.name]['temperature_times'] +=1
+            # 调风次数
+            logs = Logs.filter(type='调风')
+            for log in logs:
+                ac = log.object
+                detail[ac.room_number.name]['mode_times'] +=1
+            # 请求时长
+            for conditioner in conditioners:
+                # 获取与当前conditioner相关的请求服务的Log对象
+                related_logs = Logs.filter(object=conditioner, type='请求服务')
+                # 计算请求时长
+                request_time = timedelta()
+                # 计算请求时长的总和
+                for log in related_logs:
+                    end_service_log = Logs.filter(object=conditioner, type='结束服务', time__gt=log.time).first()
+                    if end_service_log:
+                        request_time += end_service_log.time - log.time
+                    else:
+                        # 将log.time转换为具有相同时区信息的datetime对象
+                        log_time_with_timezone = log.time.replace(tzinfo=timezone.get_current_timezone())
 
-                    # 使用具有相同时区信息的时间进行计算
-                    current_time = timezone.now()
-                    request_time += current_time - log_time_with_timezone
-                    # print(request_time)
-            # 将请求时长更新到detail字典中
-            detail[conditioner.room_number.name]['request_time'] = request_time.total_seconds()
-        # 总费用
-        logs = Logs.filter(type='产生费用')
-        for conditioner in conditioners:
-            related_logs = logs.filter(object=conditioner)
-            total_cost = 0
-            for log in related_logs:
-                # 解析remark字段以提取费用信息
-                parts = log.remark.split(',')
-                for part in parts:
-                    if '产生费用' in part:
-                        fee_str = part.strip('产生费用元').split(' ')[-1]
-                        fee = float(fee_str)
-                        total_cost += fee
-            detail[conditioner.room_number.name]['total_cost'] = total_cost
-        detail_array = list(detail.values())
-        return Response({
-            'detail': detail_array,
-        }, status=status.HTTP_200_OK)
-        # except:
-        #     return Response(status=status.HTTP_404_NOT_FOUND)
+                        # 使用具有相同时区信息的时间进行计算
+                        current_time = timezone.now()
+                        request_time += current_time - log_time_with_timezone
+                        # print(request_time)
+                # 将请求时长更新到detail字典中
+                detail[conditioner.room_number.name]['request_time'] = request_time.total_seconds()
+            # 总费用
+            logs = Logs.filter(type='产生费用')
+            for conditioner in conditioners:
+                related_logs = logs.filter(object=conditioner)
+                total_cost = 0
+                for log in related_logs:
+                    # 解析remark字段以提取费用信息
+                    parts = log.remark.split(',')
+                    for part in parts:
+                        if '产生费用' in part:
+                            fee_str = part.strip('产生费用元').split(' ')[-1]
+                            fee = float(fee_str)
+                            total_cost += fee
+                detail[conditioner.room_number.name]['total_cost'] = total_cost
+            detail_array = list(detail.values())
+            return Response({
+                'detail': detail_array,
+            }, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 class getAllLogs(APIView):
     def get(self, request):

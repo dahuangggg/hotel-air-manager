@@ -100,6 +100,13 @@ const ManagerAcView: React.FC = () => {
     if (!acInfo) return; // 如果没有找到对应的信息，直接返回
 
     const newTargetTemperature = (acInfo.targetTemperature || 0) + delta;
+    if (
+      newTargetTemperature < settings.temperatureLower ||
+      newTargetTemperature > settings.temperatureUpper
+    ) {
+      toast.error("温度超出范围");
+      return;
+    }
     await dispatch(
       updateAcInfo(
         roomNumber,

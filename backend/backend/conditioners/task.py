@@ -18,6 +18,24 @@ MAX_RUNNING_CONDITIONERS = 3
     2.1 温度回升:假设室外温度为28度,当前温度低于室外温度时,温度会回升,每120s回升一度
 """
 
+# 回温的逻辑,假设室温为25度,每120s回升一度
+def update_temperature_back(ac):
+    if ac.temperature_now == 25:
+        return
+    elif ac.temperature_now < 25:
+        ac.update_times += 3
+    elif ac.temperature_now > 25:
+        ac.update_times -= 3
+    if ac.update_times >= 36:
+        ac.update_times -= 36
+        ac.temperature_now += 1
+        # write_log('调度', '系统', ac, remark = '温度回升')
+    if ac.update_times <= -36:
+        ac.update_times += 36
+        ac.temperature_now -= 1
+        # write_log('调度', '系统', ac, remark = '温度回升')
+    ac.save()
+
 # 用shared_task装饰器装饰任务，使得celery可以自动发现并注册任务
 @shared_task 
 def update_temperature():
@@ -31,8 +49,10 @@ def update_temperature():
     acs = Conditioner.objects.all()
 
     if setting_status == False or setting_mode == '检修':
-        return
-
+        # 回温的逻辑,假设室温为25度,每120s回升一度
+        for ac in acs:
+            update_temperature_back(ac)
+            
     # 遍历空调
     for ac in acs:
         # 空调的状态为开机时
@@ -42,6 +62,7 @@ def update_temperature():
                 write_log('结束服务', '客户', ac, '空调已经关闭,服务结束')
                 ac.queue_status = '无事可做'
                 ac.save()
+            update_temperature_back(ac)
             continue
         if ac.temperature_now >= ac.temperature_set and setting.mode == '制热':
             if ac.queue_status != '无事可做':
@@ -49,6 +70,7 @@ def update_temperature():
                 write_log('结束服务', '客户', ac)
                 ac.queue_status = '无事可做'
                 ac.save()
+            update_temperature_back(ac)
             continue
         if ac.temperature_now <= ac.temperature_set and setting.mode == '制冷':
             if ac.queue_status != '无事可做':
@@ -56,6 +78,7 @@ def update_temperature():
                 write_log('结束服务', '客户', ac)
                 ac.queue_status = '无事可做'
                 ac.save()
+            update_temperature_back(ac)
             continue
         if ac.queue_status == '运行中':
             current_temperature = ac.temperature_now
