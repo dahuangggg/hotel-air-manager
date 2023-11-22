@@ -21,9 +21,8 @@ RUN pip install gunicorn
 RUN pip install -r server/requirements.txt
 
 
-ADD ./backend/backend/accounts /app/server/accounts
+ADD ./backend/backend/acounts /app/server/acounts
 ADD ./backend/backend/backend /app/server/backend
-ADD ./backend/backend/accounts /app/server/accounts
 ADD ./backend/backend/conditioners /app/server/conditioners
 ADD ./backend/backend/log /app/server/log
 ADD ./backend/backend/setup /app/server/setup
