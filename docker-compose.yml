@@ -1,0 +1,35 @@
+version: '2'
+
+services:
+    nginx: 
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: ./docker/nginx/Dockerfile
+        ports:
+            - 80:80
+            - 443:443
+        volumes:
+            - static_volume:/app/server/django_static
+            - media_volume:/app/server/media
+            - ./docker/nginx:/etc/nginx/conf.d
+        depends_on: 
+            - server
+        command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    
+    server:
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: ./docker/server/Dockerfile
+            
+        entrypoint: /app/docker/server/entrypoint.sh
+        volumes:
+            - static_volume:/app/server/django_static
+            - media_volume:/app/server/media
+        expose:
+            - 8000     
+
+volumes:
+    static_volume: {}
+    media_volume: {}

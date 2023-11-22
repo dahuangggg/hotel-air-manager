@@ -2,6 +2,10 @@
 import os 
 from celery import Celery
 
+import sys
+CURRENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, CURRENT_DIR)
+
 # 设置环境变量
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 
