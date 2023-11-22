@@ -10,3 +10,5 @@ django-celery-beat==2.5.0
 # UML建模工具,不需要在生产环境中使用
 # django-extensions==3.2.3
 # pygraphviz==1.11
+# dotenv
+python-dotenv==1.0.0
