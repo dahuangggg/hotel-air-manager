@@ -15,7 +15,6 @@ const ReceptionView: React.FC = () => {
   );
 
   const renderComponent = () => {
-    console.log(activeComponent);
     switch (activeComponent) {
       case "check-in":
         return <ReceptionCheckIn />;
@@ -74,13 +73,10 @@ const ReceptionView: React.FC = () => {
                       <h4 className="my-0 fw-normal">入住登记</h4>
                     </div>
                     <div className="card-body">
-                      <h1 className="card-title pricing-card-title">
-                        xx<small className="text-muted fw-light">xx</small>
-                      </h1>
                       <ul className="list-unstyled mt-3 mb-4">
-                        <li>xxxxxx</li>
-
-                        <li>xxxxxx</li>
+                        <li><h5>选择房间</h5></li>
+                        <li><h5>房间选择</h5></li>
+                        <li><h5>入住日期</h5></li>
                       </ul>
                       <button
                         type="button"
@@ -100,13 +96,11 @@ const ReceptionView: React.FC = () => {
                       <h4 className="my-0 fw-normal">离店结账</h4>
                     </div>
                     <div className="card-body">
-                      <h1 className="card-title pricing-card-title">
-                        xx<small className="text-muted fw-light">xx</small>
-                      </h1>
                       <ul className="list-unstyled mt-3 mb-4">
-                        <li>xxxx</li>
+                        <li><h5>费用结算</h5></li>
 
-                        <li>xxxx</li>
+                        <li><h5>收据打印</h5></li>
+                        <li><h5>空调重置</h5></li>
                       </ul>
                       <button
                         type="button"
@@ -126,13 +120,10 @@ const ReceptionView: React.FC = () => {
                       <h4 className="my-0 fw-normal">查看报表</h4>
                     </div>
                     <div className="card-body">
-                      <h1 className="card-title pricing-card-title">
-                        xx<small className="text-muted fw-light">xx</small>
-                      </h1>
                       <ul className="list-unstyled mt-3 mb-4">
-                        <li>xxxx</li>
-
-                        <li>xxxx</li>
+                        <li><h5>入住统计</h5></li>
+                        <li><h5>收入统计</h5></li>
+                        <li><h5>下载报表</h5></li>
                       </ul>
                       <button
                         type="button"

@@ -3,6 +3,7 @@ import axios from "axios";
 import { RootState, TypedDispatch } from "../store";
 import { NavigateFunction } from "react-router-dom";
 import _ from "lodash";
+import { toast } from "react-toastify";
 
 // 不考虑安全性,就用用户名当令牌算了
 let initToken: string | null = null;
@@ -71,6 +72,7 @@ export const login =
   (name: string, password: string, navigate: NavigateFunction) =>
   async (dispatch: TypedDispatch) => {
     try {
+      dispatch(setBlockUI(true));
       const url = "/api/acounts/login/";
       const { data } = await axios.post(url, { name, password });
       dispatch(setToken(data.token));
@@ -78,15 +80,18 @@ export const login =
       if (data.token === "管理员") {
         navigate("/ac-manager");
       } else if (data.token === "前台") {
-        navigate("/ac-reception");
+        navigate("/reception");
       } else if (data.token.includes("房间")) {
         navigate("/customer");
       } else {
         navigate("/login");
         console.log("未知错误,联系管理员吧");
       }
+      dispatch(setBlockUI(false));
     } catch (error) {
       console.log(error);
+      dispatch(setBlockUI(false));
+      toast.error("密码错误");
     }
   };
 

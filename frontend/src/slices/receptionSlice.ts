@@ -28,6 +28,14 @@ type logType = {
   remark: string;
 };
 
+type roomExpenseType = {
+  labels: string;
+  datasets: {
+    label: string;
+    cost: number;
+  }[];
+};
+
 // 不考虑安全性,就用用户名当令牌算了
 let initToken: string | null = null;
 if (localStorage.getItem("token")) {
@@ -39,6 +47,7 @@ const initialState = {
   roomNumbers: [] as roomNumber[],
   detail: [] as detailType[],
   allLogs: [] as logType[],
+  roomExpense: [] as roomExpenseType[],
 };
 
 const receiptionSlice = createSlice({
@@ -62,15 +71,24 @@ const receiptionSlice = createSlice({
     setAllLogs(state, action: PayloadAction<logType[]>) {
       state.allLogs = action.payload;
     },
+    setRoomExpense(state, action: PayloadAction<roomExpenseType[]>) {
+      state.roomExpense = action.payload;
+    },
   },
 });
 
-export const { setToken, setRoomNumbers, setDetail, setAllLogs } =
-  receiptionSlice.actions; // 添加了setRoomNumbers
+export const {
+  setToken,
+  setRoomNumbers,
+  setDetail,
+  setAllLogs,
+  setRoomExpense,
+} = receiptionSlice.actions; // 添加了setRoomNumbers
 
 export const getRoomNumbers = (state: RootState) => state.reception.roomNumbers;
 export const getDetail = (state: RootState) => state.reception.detail;
 export const getAllLogs = (state: RootState) => state.reception.allLogs;
+export const getRoomExpense = (state: RootState) => state.reception.roomExpense;
 
 export const fetchRoomNumbers = () => async (dispatch: TypedDispatch) => {
   try {
@@ -100,16 +118,19 @@ export const registerForCustomer =
     }
   };
 
-export const fetchDetail = () => async (dispatch: TypedDispatch) => {
-  try {
-    const url = "/api/logs/get_ac_info/";
-    const { data } = await axios.get(url);
-    dispatch(setDetail(data.detail));
-    console.log(Array.isArray(data.detail));
-  } catch (error) {
-    console.log(error);
-  }
-};
+export const fetchDetail =
+  (startTime: string, endTime: string) => async (dispatch: TypedDispatch) => {
+    try {
+      const url = "/api/logs/get_ac_info/";
+      const { data } = await axios.post(url, {
+        start_time: startTime,
+        end_time: endTime,
+      });
+      dispatch(setDetail(data.detail));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 export const fetchAllLogs = () => async (dispatch: TypedDispatch) => {
   try {
@@ -136,5 +157,15 @@ export const checkOutForCustomer =
       toast.error("退房失败");
     }
   };
+
+export const fetchRoomExpense = () => async (dispatch: TypedDispatch) => {
+  try {
+    const url = "/api/logs/get_room_expense/";
+    const { data } = await axios.get(url);
+    dispatch(setRoomExpense(data.roomExpense));
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export default receiptionSlice.reducer;

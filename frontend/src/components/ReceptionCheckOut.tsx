@@ -4,10 +4,8 @@ import { useSelector } from "react-redux";
 import {
   checkOutForCustomer,
   fetchAllLogs,
-  fetchDetail,
   fetchRoomNumbers,
   getAllLogs,
-  getDetail,
   getRoomNumbers,
 } from "../slices/receptionSlice";
 import {
@@ -117,10 +115,8 @@ const ReceptionCheckOut = () => {
     { field: "type", headerName: "类型", width: 90 },
     { field: "time", headerName: "时间", width: 180 },
     { field: "operator", headerName: "操作人", width: 75 },
-    // 隐藏""对象""列.
     { field: "object", headerName: "对象", width: 75, hide: true },
     { field: "remark", headerName: "Remark", width: 800 },
-    // 按照需要定义其他列
   ];
   // 将 allLogs 转换成符合 DataGrid 需求的 rows 格式
   const rows = allLogs.map((log, index) => ({
@@ -138,7 +134,6 @@ const ReceptionCheckOut = () => {
       dispatch(fetchRoomNumbers());
     }
     dispatch(fetchAllLogs());
-    dispatch(fetchDetail());
   }, [dispatch, activeStep]);
 
   const handleButtonClick = (room: string) => {
@@ -223,7 +218,12 @@ const ReceptionCheckOut = () => {
               id="panel1bh-header"
             >
               <Typography sx={{ width: "33%", flexShrink: 0 }}>
-                {selectedRoom} 共消费 {acInfos.find(detail => detail.roomNumber === selectedRoom) ? acInfos.find(detail => detail.roomNumber === selectedRoom)?.cost : 0} 元
+                {selectedRoom} 共消费{" "}
+                {acInfos.find((detail) => detail.roomNumber === selectedRoom)
+                  ? acInfos.find((detail) => detail.roomNumber === selectedRoom)
+                      ?.cost
+                  : 0}{" "}
+                元
               </Typography>
               <Typography sx={{ color: "text.secondary" }}>
                 展开以查看详细,点击EXPORT按钮以下载详单
@@ -243,9 +243,9 @@ const ReceptionCheckOut = () => {
                         items: [
                           {
                             id: 1,
-                            field: 'object',
+                            field: "object",
                             value: selectedRoom,
-                            operator: 'contains',
+                            operator: "contains",
                           },
                         ],
                       },
@@ -260,14 +260,14 @@ const ReceptionCheckOut = () => {
               </div>
             </AccordionDetails>
             <Button
-            variant="contained"
-            // 间隔2,右对齐
-            sx={{ mr: 2,mb: 1, mt:-1, float: "right" }}
-            onClick={handleConfirmClick}
-            style={{ fontSize: "15px" }}
-          >
-            确认离店
-          </Button>
+              variant="contained"
+              // 间隔2,右对齐
+              sx={{ mr: 2, mb: 1, mt: -1, float: "right" }}
+              onClick={handleConfirmClick}
+              style={{ fontSize: "15px" }}
+            >
+              确认离店
+            </Button>
           </Accordion>
         </div>
       )}

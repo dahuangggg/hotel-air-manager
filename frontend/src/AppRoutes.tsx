@@ -11,6 +11,8 @@ import LoginView from "./views/LoginView";
 import MyComponent from "./views/ManagerView";
 import LogoutView from "./views/LogoutView";
 import ReceptionView from "./views/ReceptionView";
+import AdminLoginView from "./views/AdminLoginView";
+import ReceptionLoginView from "./views/ReceptionLogin";
 
 type Props = {
   children: ReactNode;
@@ -30,15 +32,17 @@ export default function AppRoutes() {
           <Route path="/" element={<IndexView />} />
           <Route path="/login" element={<LoginView />} />
           <Route path="/logout" element={<LogoutView />} />
+          <Route path="/adminLogin" element={<AdminLoginView />} />
+          <Route path="/receptionLogin" element={<ReceptionLoginView />} />
 
           {/* 认证的父路由 */}
-          <Route path="/customer" element={<RequireAuth />}>
+          <Route path="/customer" element={<RequireAuth type="customer" />}>
             <Route index element={<CustomerAcView />} />
           </Route>
-          <Route path="/ac-manager" element={<RequireAuth />}>
+          <Route path="/ac-manager" element={<RequireAuth type="manager"/>}>
             <Route index element={<MyComponent />} />
           </Route>
-          <Route path="/reception" element={<RequireAuth />}>
+          <Route path="/reception" element={<RequireAuth type="reception"/>}>
             <Route index element={<ReceptionView />} />
           </Route>
         </Routes>

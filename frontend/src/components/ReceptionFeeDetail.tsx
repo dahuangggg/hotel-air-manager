@@ -22,20 +22,25 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 import MonitorNumbers from "./MonitorNumbers";
+import dayjs, { Dayjs } from "dayjs";
+import { toast } from "react-toastify";
+import RoomExpenseChart from "./RoomExpenseChart";
+import RoomCostPieChart from "./RoomCostPieChart";
 
 const ReceptionFeeDetail: React.FC = () => {
   const dispatch = useAppDispatch();
   const details = useSelector(getDetail);
-  const [selectedStartDateTime, setSelectedStartDateTime] = useState(null);
-  const [selectedEndDateTime, setSelectedEndDateTime] = useState(null);
+  const [selectedStartDateTime, setSelectedStartDateTime] =
+    useState<Dayjs | null>(null);
+  const [selectedEndDateTime, setSelectedEndDateTime] = useState<Dayjs | null>(
+    null,
+  );
 
   useEffect(() => {
-    dispatch(fetchDetail());
+    dispatch(fetchDetail("init", "init"));
+    // 输出detail的值
+    console.log(details);
   }, [dispatch]);
-
-  // const handleNowButtonClick = (setSelectedDateTime:React.Dispatch<React.SetStateAction<null>>) => {
-  //   setSelectedDateTime(new Date()); // 设置当前时间
-  // };
 
   return (
     <>
@@ -49,57 +54,112 @@ const ReceptionFeeDetail: React.FC = () => {
         >
           前台空调信息
         </Typography>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          marginLeft={2}
+          marginBottom={1}
+          marginTop={1}
+        >
+          <Box marginRight={0}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={["DateTimePicker"]}>
+                <DateTimePicker
+                  slotProps={{
+                    actionBar: {
+                      actions: ["today", "accept", "cancel"],
+                    },
+                  }}
+                  label="开始时间"
+                  value={selectedStartDateTime}
+                  onChange={(newValue) => {
+                    setSelectedStartDateTime(newValue);
+                  }}
+                />
+              </DemoContainer>
+            </LocalizationProvider>
+          </Box>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DemoContainer components={["DateTimePicker"]}>
+              <DateTimePicker
+                slotProps={{
+                  actionBar: {
+                    actions: ["today", "accept", "cancel"],
+                  },
+                }}
+                label="结束时间"
+                value={selectedEndDateTime}
+                onChange={(newValue) => {
+                  setSelectedEndDateTime(newValue);
+                }}
+              />
+            </DemoContainer>
+          </LocalizationProvider>
+          <Box>
+            <Button
+              color="primary"
+              sx={{ marginTop: "20px" }}
+              onClick={() => {
+                if (
+                  selectedStartDateTime === null ||
+                  selectedEndDateTime === null
+                ) {
+                  toast.error("开始时间和结束时间不能为空");
+                  return;
+                } else if (selectedStartDateTime.isAfter(selectedEndDateTime)) {
+                  toast.error("开始时间不能在结束时间之后");
+                } else {
+                  dispatch(
+                    fetchDetail(
+                      selectedStartDateTime?.format("YYYY-MM-DD HH:mm:ss"),
+                      selectedEndDateTime?.format("YYYY-MM-DD HH:mm:ss"),
+                    ),
+                  );
+                }
+              }}
+            >
+              给我搜
+            </Button>
+            <Button
+              variant="text"
+              color="primary"
+              sx={{ marginTop: "20px" }}
+              onClick={() => {
+                // 获取当前时间
+                const currentDate = dayjs();
+                setSelectedEndDateTime(currentDate);
+
+                // 计算一周前的时间
+                const oneWeekAgo = currentDate.subtract(1, "week");
+                // 设置 selectedStartDateTime 为一周前的时间, 但是时分秒为 00:00:00
+                setSelectedStartDateTime(oneWeekAgo.startOf("day"));
+              }}
+            >
+              周报
+            </Button>
+            <Button
+              variant="text"
+              color="primary"
+              sx={{ marginTop: "20px" }}
+              onClick={() => {
+                // 获取当前时间
+                const currentDate = dayjs();
+                setSelectedEndDateTime(currentDate);
+
+                // 计算一天前的时间
+                const oneDayAgo = currentDate.subtract(1, "day");
+
+                // 设置 selectedStartDateTime 为一天前的时间, 但是时分秒为 00:00:00
+                setSelectedStartDateTime(oneDayAgo.startOf("day"));
+              }}
+            >
+              日报
+            </Button>
+          </Box>
+        </Box>
         <Card elevation={3}>
           <CardContent>
             <TableContainer>
-              <Box display="flex" justifyContent="space-between">
-                <Box marginRight={0}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={["DateTimePicker"]}>
-                      <DateTimePicker
-                        slotProps={{
-                          actionBar: {
-                            actions: ["today", "accept", "cancel"],
-                          },
-                        }}
-                        label="开始时间"
-                        value={selectedStartDateTime}
-                        onChange={(newValue) => {
-                          setSelectedStartDateTime(newValue);
-                        }}
-                      />
-                    </DemoContainer>
-                  </LocalizationProvider>
-                </Box>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["DateTimePicker"]}>
-                    <DateTimePicker
-                      slotProps={{
-                        actionBar: {
-                          actions: ["today", "accept", "cancel"],
-                        },
-                      }}
-                      label="结束时间"
-                      value={selectedEndDateTime}
-                      onChange={(newValue) => {
-                        setSelectedEndDateTime(newValue);
-                      }}
-                    />
-                  </DemoContainer>
-                </LocalizationProvider>
-                <Box>
-                  <Button
-                    variant="text"
-                    color="primary"
-                    onClick={() => {
-                      console.log(selectedStartDateTime);
-                      console.log(selectedEndDateTime);
-                    }}
-                  >
-                    给我搜
-                  </Button>
-                </Box>
-              </Box>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -124,17 +184,6 @@ const ReceptionFeeDetail: React.FC = () => {
                       <TableCell>{detail.mode_times}</TableCell>
                       <TableCell>{detail.request_time.toFixed(1)} s</TableCell>
                       <TableCell>{detail.total_cost}</TableCell>
-                      {/* <TableCell>
-                        <Button
-                          variant="text"
-                          color="primary"
-                          onClick={() => {
-                            dispatch(fetchDetail());
-                          }}
-                        >
-                          刷新
-                        </Button>
-                      </TableCell> */}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -144,54 +193,13 @@ const ReceptionFeeDetail: React.FC = () => {
         </Card>
 
         <Box marginTop={5}>
-          <MonitorNumbers
-            // on_off_times={details.reduce((a, b) => a + b.on_off_times, 0)}
-            // dispatch_times={details.reduce((a, b) => a + b.dispatch_times, 0)}
-            // detail_times={details.reduce((a, b) => a + b.detail_times, 0)}
-            // temperature_times={details.reduce(
-            //   (a, b) => a + b.temperature_times,
-            //   0,
-            // )}
-            // mode_times={details.reduce((a, b) => a + b.mode_times, 0)}
-            // request_time={parseFloat(
-            //   details.reduce((a, b) => a + b.request_time, 0).toFixed(1),
-            // )}
-            details={details}
-          />
+          <MonitorNumbers details={details} />
         </Box>
         <div style={{ height: "64px" }}></div>
         <div className="row">
-          <div className="col-lg-7 col-xl-8">
-            <div className="card shadow mb-4">
-              <div className="card-header d-flex justify-content-between align-items-center">
-                <h6 className="text-primary fw-bold m-0">用量报表</h6>
-                <div className="dropdown no-arrow">
-                  <button
-                    className="btn btn-link btn-sm dropdown-toggle"
-                    aria-expanded="false"
-                    data-bs-toggle="dropdown"
-                    type="button"
-                  >
-                    <i className="fas fa-ellipsis-v text-gray-400"></i>
-                  </button>
-                  <div className="dropdown-menu shadow dropdown-menu-end animated--fade-in">
-                    <p className="text-center dropdown-header">操作</p>
-                    <a className="dropdown-item" href="/reception">
-                      {" "}
-                      刷新
-                    </a>
-                    {/*<div className="dropdown-divider"></div>*/}
-                    {/*<a className="dropdown-item" href="#"> Something else here</a>*/}
-                  </div>
-                </div>
-              </div>
-              <div className="card-body">
-                <div className="chart-area">
-                  <canvas height="320" width="705"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* <canvas height="320" width="705"> */}
+          <RoomExpenseChart />
+          {/* </canvas> */}
           <div className="col-lg-5 col-xl-4">
             <div className="card shadow mb-4">
               <div className="card-header d-flex justify-content-between align-items-center">
@@ -218,7 +226,8 @@ const ReceptionFeeDetail: React.FC = () => {
               </div>
               <div className="card-body">
                 <div className="chart-area">
-                  <canvas height="320" width="324"></canvas>
+                  {/* <canvas height="320" width="324"></canvas> */}
+                  <RoomCostPieChart />
                 </div>
               </div>
             </div>

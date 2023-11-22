@@ -10,6 +10,8 @@ from datetime import timedelta, datetime
 from django.utils import timezone
 from acounts.models import User
 from conditioners.models import Conditioner
+from django.utils.dateparse import parse_datetime
+
 # Create your views here.
 
 def write_log(type, operator, ac, remark='无', request=None, up = True):
@@ -110,9 +112,22 @@ def write_log(type, operator, ac, remark='无', request=None, up = True):
         log_entry.save()
 
 class getAcInfo(APIView):
-    def get(self, request):
+    def post(self, request):
         try:
-            Logs = Log.objects.all()
+            start_time = request.data['start_time'] # 输出为string类型: 2023-11-21 00:00:00
+            end_time = request.data['end_time'] # 输出为string类型: 2023-11-22 15:45:32
+            print(start_time, end_time)
+            if start_time == 'init' or end_time == 'init':
+                Logs = Log.objects.all()
+            else:
+                # 转换字符串日期为datetime对象
+                start_datetime = parse_datetime(start_time)
+                end_datetime = parse_datetime(end_time)
+
+                # 使用 Q 对象来构建复杂查询
+                Logs = Log.objects.filter(
+                    Q(time__gte=start_datetime) & Q(time__lte=end_datetime)
+                )
             conditioners = Conditioner.objects.all()
             detail = {}
             for conditioner in conditioners:
@@ -198,6 +213,67 @@ class getAcInfo(APIView):
             }, status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+class getRoomExpense(APIView):
+    def get(self, request):
+        # try:
+        room_expense = []
+        for ac in Conditioner.objects.all():
+            # 计算这1个月内每个空调每天的费用
+            logs = Log.objects.filter(object=ac, type='产生费用')
+            # 获取当前时间
+            current_time = timezone.now()
+            # 获取当前时间的前30天
+            start_time = current_time - timedelta(days=30)
+            # 获取当前时间的前30天内的费用
+            logs = logs.filter(time__gte=start_time)
+            # 计算每天的费用
+            cost_per_day = {}
+            for log in logs:
+                # 获取当前log的日期
+                log_date = log.time.date()
+                # 如果当前日期已经在cost_per_day中，则将费用累加
+                if log_date in cost_per_day:
+                    # 解析remark字段以提取费用信息
+                    fee = 0
+                    parts = log.remark.split(',')
+                    for part in parts:
+                        if '产生费用' in part:
+                            fee_str = part.strip('产生费用元').split(' ')[-1]
+                            fee = float(fee_str)
+                    cost_per_day[log_date] += fee
+                    # cost_per_day[log_date] += log.cost
+                # 如果当前日期不在cost_per_day中，则将费用初始化为0
+                else:
+                    # cost_per_day[log_date] = log.cost
+                    # 解析remark字段以提取费用信息
+                    fee = 0
+                    parts = log.remark.split(',')
+                    for part in parts:
+                        if '产生费用' in part:
+                            fee_str = part.strip('产生费用元').split(' ')[-1]
+                            fee = float(fee_str)
+                    cost_per_day[log_date] = fee
+            # 将cost_per_day转换为数组
+            cost_per_day_array = []
+            for date, cost in cost_per_day.items():
+                cost_per_day_array.append({
+                    'label': date,
+                    'cost': cost,
+                })
+            # 将cost_per_day_array按照日期排序
+            cost_per_day_array.sort(key=lambda x: x['label'])
+            # 将cost_per_day_array添加到room_expense中
+            room_expense.append({
+                'labels': ac.room_number.name,
+                'datasets': cost_per_day_array,
+            })
+        return Response({
+            'roomExpense': room_expense,
+        }, status=status.HTTP_200_OK)
+        # except:
+        #     return Response(status=status.HTTP_404_NOT_FOUND)
+                
 
 class getAllLogs(APIView):
     def get(self, request):
