@@ -21,13 +21,13 @@ RUN pip install gunicorn
 RUN pip install -r server/requirements.txt
 
 
-ADD ./backend/accounts /app/server/accounts
-ADD ./backend/backend /app/server/backend
-ADD ./backend/accounts /app/server/accounts
-ADD ./backend/conditioners /app/server/conditioners
-ADD ./backend/log /app/server/log
-ADD ./backend/setup /app/server/setup
-ADD ./backend/manage.py /app/server/
+ADD ./backend/backend/accounts /app/server/accounts
+ADD ./backend/backend/backend /app/server/backend
+ADD ./backend/backend/accounts /app/server/accounts
+ADD ./backend/backend/conditioners /app/server/conditioners
+ADD ./backend/backend/log /app/server/log
+ADD ./backend/backend/setup /app/server/setup
+ADD ./backend/backend/manage.py /app/server/
 ADD ./docker /app/docker
 
 RUN chmod +x /app/docker/server/entrypoint.sh
