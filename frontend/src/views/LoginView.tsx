@@ -24,7 +24,7 @@ const LoginView: React.FC = () => {
     dispatch(fetchRoomsName());
   }, [dispatch]);
 
-  const roomsName = useSelector(getRoomsName);
+  const roomsName = useSelector(getRoomsName) || [];
 
   const [name, setName] = useState(roomsName[0] || ""); // Default to the first room name
   const [password, setPassword] = useState("");
