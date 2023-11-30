@@ -1,16 +1,16 @@
 from setup.models import Settings
-from .models import Log
 from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from .models import Log
 from conditioners.models import Conditioner
 from datetime import timedelta, datetime
 from django.utils import timezone
 from acounts.models import User
 from conditioners.models import Conditioner
 from django.utils.dateparse import parse_datetime
+from setup.models import Settings
+from .models import Log, Detail
 
 # Create your views here.
 
@@ -74,11 +74,11 @@ def write_log(type, operator, ac, remark='无', request=None, up = True):
     elif type == '产生费用':
         setting = Settings.objects.get(id=1)
         if ac.mode == '低风速':
-            fee = setting.low_speed_fee
+            fee = setting.low_speed_fee * 0.5
         elif ac.mode == '中风速':
-            fee = setting.mid_speed_fee
+            fee = setting.mid_speed_fee * 0.5
         elif ac.mode == '高风速':
-            fee = setting.high_speed_fee
+            fee = setting.high_speed_fee * 0.5
         if up:
             log_entry = Log(
                 type=type,
@@ -110,6 +110,86 @@ def write_log(type, operator, ac, remark='无', request=None, up = True):
             remark = remark
         )
         log_entry.save()
+
+def write_detail(ac):
+    # 获取与当前conditioner相关的请求服务的Log对象,取最新的一个
+    request_log = Log.objects.filter(object=ac, type='请求服务').order_by('-time').first()
+    # 房间号
+    name = ac.room_number.name
+    # 开始时间
+    start_time = request_log.time
+    # 结束时间
+    end_time = Log.objects.filter(object=ac, type='结束服务', time__gt=request_log.time).first().time
+    # 请求时长
+    request_time = end_time - start_time
+    logs_after_request = Log.objects.filter(
+        Q(object=ac) & Q(time__gte=request_log.time)
+    ).order_by('time')
+    # 服务时间要根据type=调度的log来计算
+    # 查找time在log到end_service_log之间的调度log
+    dispatch_logs = Log.objects.filter(
+        Q(object=ac) & Q(time__gt=request_log.time) & Q(time__lt=end_time) & Q(type='调度')
+    ).order_by('time')
+
+    # 服务时长
+    server_time = timedelta()
+    # 服务时间的总和
+    for dispatch_log in dispatch_logs:
+        # 如果最后3个字为运行态
+        if dispatch_log.remark[-3:] == '运行态':
+            # 将log.time转换为具有相同时区信息的datetime对象
+            log_time_with_timezone = dispatch_log.time.replace(tzinfo=timezone.get_current_timezone())
+
+            # 结束运行态的时间为下一个调度log的时间
+            next_dispatch_log = dispatch_logs.filter(time__gt=dispatch_log.time).first()
+            if next_dispatch_log:
+                end_time_with_timezone = next_dispatch_log.time.replace(tzinfo=timezone.get_current_timezone())
+            else:
+                end_time_with_timezone = timezone.now()
+            
+            # 使用具有相同时区信息的时间进行计算
+            server_time += end_time_with_timezone - log_time_with_timezone
+    # 风速
+    mode = ac.mode
+    # 当前费用
+    log_entry = Log.objects.filter(
+        Q(object=ac) & Q(type='产生费用') & Q(time__gt=request_log.time) & Q(time__lt=end_time)
+    ).order_by('time')
+    if log_entry:
+        # 解析remark字段以提取费用信息
+        cost = 0
+        for log in log_entry:
+            print(log.remark)
+            parts = log.remark.split(',')
+            for part in parts:
+                if '产生费用' in part:
+                    fee_str = part.strip('产生费用元').split(' ')[-1]
+                    fee = float(fee_str)
+                    cost += fee
+    else:
+        cost = 0
+    # 累计费用
+    total_cost = ac.cost
+    # 费率
+    setting = Settings.objects.get(id=1)
+    if mode == '低风速':
+        fee = setting.low_speed_fee
+    elif mode == '高风速':
+        fee = setting.high_speed_fee
+    else:
+        fee = setting.mid_speed_fee
+    # 写入detail
+    detail_entry = Detail(
+        room_number = name,
+        request_duaration = request_time.total_seconds(),
+        start_time = start_time,
+        end_time = end_time,
+        service_duaration = server_time.total_seconds(),
+        speed = mode,
+        cost = cost,
+        fee = fee,
+    )
+    detail_entry.save()
 
 class getAcInfo(APIView):
     def post(self, request):
@@ -299,3 +379,33 @@ class getAllLogs(APIView):
             }, status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
+    
+class getAllDetails(APIView):
+    def get(self, request):
+        # try:
+        detail_list = []
+        for ac in Conditioner.objects.all():
+            logs_after_check_in = []
+            detail_after_check_in = []
+            check_in_log = Log.objects.filter(object=ac, type='入住').order_by('-time').first()
+            if check_in_log:
+                detail_after_check_in = Detail.objects.filter(
+                    Q(room_number=ac.room_number.name) & Q(start_time__gte=check_in_log.time)
+                ).order_by('start_time')
+            for detail in detail_after_check_in:
+                detail_list.append({
+                    'roomNumber': detail.room_number,
+                    'requestDuaration': detail.request_duaration,
+                    # 用东八区的时间来显示
+                    'startTime': detail.start_time + timedelta(hours=8),
+                    'endTime': detail.end_time + timedelta(hours=8),
+                    'serviceDuaration': detail.service_duaration,
+                    'speed': detail.speed,
+                    'cost': detail.cost,
+                    'fee': detail.fee,
+                })
+        return Response({
+            'detail': detail_list,
+        }, status=status.HTTP_200_OK)
+        # except:
+        #     return Response(status=status.HTTP_404_NOT_FOUND)

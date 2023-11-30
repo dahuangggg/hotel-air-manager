@@ -76,12 +76,12 @@ export const login =
       const url = "/api/acounts/login/";
       const { data } = await axios.post(url, { name, password });
       dispatch(setToken(data.token));
-      await dispatch(fetchAcInfo());
       if (data.token === "管理员") {
         navigate("/ac-manager");
       } else if (data.token === "前台") {
         navigate("/reception");
       } else if (data.token.includes("房间")) {
+        await dispatch(fetchAcInfo());
         navigate("/customer");
       } else {
         navigate("/login");

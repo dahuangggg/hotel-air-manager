@@ -30,3 +30,23 @@ class Log(models.Model):
     object = models.ForeignKey(Conditioner, on_delete=models.CASCADE)
     # 备注
     remark = models.CharField(max_length=1024, default='无')
+
+class Detail(models.Model):
+    # 房间号
+    room_number = models.CharField(max_length=20, default='0')
+    # 请求时长
+    request_duaration = models.IntegerField(default=0)
+    # 服务开始时间
+    start_time = models.DateTimeField()
+    # 服务结束时间
+    end_time = models.DateTimeField()
+    # 服务时长
+    service_duaration = models.IntegerField(default=0)
+    # 风速
+    speed = models.CharField(max_length=20, default='0')
+    # 产生费用
+    cost = models.FloatField(default=0)
+    # 累计费用
+    total_cost = models.FloatField(default=0)
+    # 费率
+    fee = models.FloatField(default=0)

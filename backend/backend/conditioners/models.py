@@ -15,9 +15,9 @@ class Conditioner(models.Model):
         ('无事可做', '无事可做'),
     ]
     # 当前温度
-    temperature_now = models.IntegerField(blank=False, default=25)
+    temperature_now = models.FloatField(blank=False, default=25)
     # 设置温度
-    temperature_set = models.IntegerField(blank=False, default=25)
+    temperature_set = models.FloatField(blank=False, default=25)
     # 模式(低,中,高)
     mode = models.CharField(max_length=20, choices=MODE_CHOICES, default='0')
     # 状态(开机,关机)
