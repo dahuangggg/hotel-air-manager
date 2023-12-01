@@ -2,10 +2,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import User
+from conditioners.models import Conditioner
+from log.models import Log
+from django.db.models import Q
 
 # Create your views here.
 # 登陆
-
 class LoginView(APIView):
     def post(self, request):
         try:
@@ -25,7 +27,7 @@ class LoginView(APIView):
                 'error': '密码错误',
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-# 注册(添加房间)
+# 注册(添加房间)[弃用]
 class AddRoomView(APIView):
     def post(self, request):
         try:
@@ -62,12 +64,19 @@ class ChangePasswordView(APIView):
 
 class GetRoomsNameView(APIView):
     def get(self, request):
-        rooms = User.objects.all()
+        # 防止check out空闲的空调
+        roomNumber = {}
+        for conditioners in Conditioner.objects.all():
+            roomNumber[conditioners.room_number.name] = True
+        for log in Log.objects.filter(Q(type='入住') | Q(type='结算')):
+            if log.type == '入住':
+                roomNumber[log.object.room_number.name] = False
+            else:
+                roomNumber[log.object.room_number.name] = True
         rooms_name = []
-        for room in rooms:
-            if '房间' in room.name:
-                rooms_name.append(room.name)
+        for room in roomNumber:
+            if roomNumber[room]:
+                rooms_name.append(room)
         return Response({
             'rooms_name': rooms_name
             }, status=status.HTTP_200_OK)
-

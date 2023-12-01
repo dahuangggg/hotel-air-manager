@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { setBlockUI } from "./authSlice";
 import { type } from "os";
 
-type roomNumber = {
+export type roomNumber = {
   [key: string]: boolean;
 };
 
@@ -18,6 +18,18 @@ export type detailType = {
   mode_times: number;
   request_time: number;
   total_cost: number;
+};
+
+// 另一个detailType
+type detailType2 = {
+  roomNumber: string;
+  requestDuaration: number;
+  startTime: string;
+  endTime: string;
+  serviceDuaration: number;
+  speed: string;
+  cost: number;
+  fee: number;
 };
 
 type logType = {
@@ -44,10 +56,12 @@ if (localStorage.getItem("token")) {
 
 const initialState = {
   token: initToken as string | null,
-  roomNumbers: [] as roomNumber[],
+  // roomNumbers: [] as roomNumber[],
+  roomNumbers: {} as roomNumber,
   detail: [] as detailType[],
   allLogs: [] as logType[],
   roomExpense: [] as roomExpenseType[],
+  detail2: [] as detailType2[],
 };
 
 const receiptionSlice = createSlice({
@@ -62,7 +76,7 @@ const receiptionSlice = createSlice({
         localStorage.removeItem("token");
       }
     },
-    setRoomNumbers(state, action: PayloadAction<roomNumber[]>) {
+    setRoomNumbers(state, action: PayloadAction<roomNumber>) {
       state.roomNumbers = action.payload;
     },
     setDetail(state, action: PayloadAction<detailType[]>) {
@@ -74,6 +88,9 @@ const receiptionSlice = createSlice({
     setRoomExpense(state, action: PayloadAction<roomExpenseType[]>) {
       state.roomExpense = action.payload;
     },
+    setDetail2(state, action: PayloadAction<detailType2[]>) {
+      state.detail2 = action.payload;
+    },
   },
 });
 
@@ -83,12 +100,14 @@ export const {
   setDetail,
   setAllLogs,
   setRoomExpense,
+  setDetail2,
 } = receiptionSlice.actions; // 添加了setRoomNumbers
 
 export const getRoomNumbers = (state: RootState) => state.reception.roomNumbers;
 export const getDetail = (state: RootState) => state.reception.detail;
 export const getAllLogs = (state: RootState) => state.reception.allLogs;
 export const getRoomExpense = (state: RootState) => state.reception.roomExpense;
+export const getDetail2 = (state: RootState) => state.reception.detail2;
 
 export const fetchRoomNumbers = () => async (dispatch: TypedDispatch) => {
   try {
@@ -163,6 +182,16 @@ export const fetchRoomExpense = () => async (dispatch: TypedDispatch) => {
     const url = "/api/logs/get_room_expense/";
     const { data } = await axios.get(url);
     dispatch(setRoomExpense(data.roomExpense));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const fetchDetail2 = () => async (dispatch: TypedDispatch) => {
+  try {
+    const url = "/api/logs/get_all_details/";
+    const { data } = await axios.get(url);
+    dispatch(setDetail2(data.detail));
   } catch (error) {
     console.log(error);
   }

@@ -4,8 +4,10 @@ import { useSelector } from "react-redux";
 import {
   checkOutForCustomer,
   fetchAllLogs,
+  fetchDetail2,
   fetchRoomNumbers,
   getAllLogs,
+  getDetail2,
   getRoomNumbers,
 } from "../slices/receptionSlice";
 import {
@@ -110,16 +112,42 @@ const ReceptionCheckOut = () => {
   const [selectedRoom, setSelectedRoom] = useState<string>("");
   const [expanded, setExpanded] = React.useState<string | false>(false);
   const allLogs = useSelector(getAllLogs);
+  const details2 = useSelector(getDetail2);
   const acInfos = useSelector(getAcInfos);
-  const columns = [
+  const columns1 = [
+    // 序号
+    { field: "id", headerName: "序号", width: 90 },
+    { field: "roomNumber", headerName: "房间号", width: 110 },
+    { field: "requestDuaration", headerName: "请求时长", width: 120 },
+    { field: "serviceDuaration", headerName: "服务时长", width: 120 },
+    { field: "speed", headerName: "风速", width: 100 },
+    { field: "cost", headerName: "费用", width: 100 },
+    { field: "fee", headerName: "费率", width: 100 },
+    { field: "startTime", headerName: "开始请求时间", width: 300 },
+    { field: "endTime", headerName: "结束请求时间", width: 300 },
+  ];
+  const columns2 = [
     { field: "type", headerName: "类型", width: 90 },
     { field: "time", headerName: "时间", width: 180 },
     { field: "operator", headerName: "操作人", width: 75 },
     { field: "object", headerName: "对象", width: 75, hide: true },
     { field: "remark", headerName: "Remark", width: 800 },
   ];
+  // 将 details2 转换成符合 DataGrid 需求的 rows 格式
+  const rows1 = details2.map((detail, index) => ({
+    id: index + 1, // 假设 id 为索引加一
+    roomNumber: detail.roomNumber,
+    requestDuaration: detail.requestDuaration,
+    startTime: detail.startTime,
+    endTime: detail.endTime,
+    serviceDuaration: detail.serviceDuaration,
+    speed: detail.speed,
+    cost: detail.cost,
+    fee: detail.fee,
+    // 可以根据需要添加其他属性
+  }));
   // 将 allLogs 转换成符合 DataGrid 需求的 rows 格式
-  const rows = allLogs.map((log, index) => ({
+  const rows2 = allLogs.map((log, index) => ({
     id: index + 1, // 假设 id 为索引加一
     type: log.type,
     time: log.time,
@@ -132,7 +160,9 @@ const ReceptionCheckOut = () => {
   useEffect(() => {
     if (activeStep === 0) {
       dispatch(fetchRoomNumbers());
+      dispatch(fetchDetail2());
     }
+    dispatch(fetchAcInfos());
     dispatch(fetchAllLogs());
   }, [dispatch, activeStep]);
 
@@ -226,19 +256,80 @@ const ReceptionCheckOut = () => {
                 元
               </Typography>
               <Typography sx={{ color: "text.secondary" }}>
-                展开以查看详细,点击EXPORT按钮以下载详单
+                展开以查看详单1,点击EXPORT按钮以下载详单1
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
               <div style={{ height: 510, width: "100%" }}>
                 <DataGrid
-                  columns={columns}
-                  rows={rows}
+                  columns={columns1}
+                  rows={rows1}
                   slots={{ toolbar: GridToolbar }}
                   initialState={{
-                    ...rows,
+                    ...rows1,
                     filter: {
-                      ...rows.filter,
+                      ...rows1.filter,
+                      filterModel: {
+                        items: [
+                          {
+                            id: 1,
+                            field: "roomNumber",
+                            value: selectedRoom,
+                            operator: "contains",
+                          },
+                        ],
+                      },
+                    },
+                    columns: {
+                      columnVisibilityModel: {
+                        roomNumber: false,
+                      },
+                    },
+                  }}
+                />
+              </div>
+            </AccordionDetails>
+            <Button
+              variant="contained"
+              // 间隔2,右对齐
+              sx={{ mr: 2, mb: 1, mt: -1, float: "right" }}
+              onClick={handleConfirmClick}
+              style={{ fontSize: "15px" }}
+            >
+              确认离店
+            </Button>
+          </Accordion>
+          <Accordion
+            expanded={expanded === "panel2"}
+            onChange={handleExpandClick("panel2")}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1bh-content"
+              id="panel1bh-header"
+            >
+              <Typography sx={{ width: "33%", flexShrink: 0 }}>
+                {selectedRoom} 共消费{" "}
+                {acInfos.find((detail) => detail.roomNumber === selectedRoom)
+                  ? acInfos.find((detail) => detail.roomNumber === selectedRoom)
+                      ?.cost
+                  : 0}{" "}
+                元
+              </Typography>
+              <Typography sx={{ color: "text.secondary" }}>
+                展开以查看详单2,点击EXPORT按钮以下载详单2
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <div style={{ height: 510, width: "100%" }}>
+                <DataGrid
+                  columns={columns2}
+                  rows={rows2}
+                  slots={{ toolbar: GridToolbar }}
+                  initialState={{
+                    ...rows2,
+                    filter: {
+                      ...rows2.filter,
                       filterModel: {
                         items: [
                           {
@@ -284,7 +375,7 @@ const ReceptionCheckOut = () => {
               fontSize: "25px",
             }}
           >
-            退房成功,空调状态以重置
+            退房成功,空调状态已重置
           </div>
           <hr
             style={{

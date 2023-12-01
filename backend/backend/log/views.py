@@ -84,14 +84,14 @@ def write_log(type, operator, ac, remark='无', request=None, up = True):
                 type=type,
                 operator=operator,
                 object=ac,
-                remark = f'温度从{ac.temperature_now} °C升高到{ac.temperature_now+1} °C,当前风速为{ac.mode},对应费率为{fee}元/1°C,产生费用{fee}元,费用从{round(ac.cost, 2)}元增加到{round(ac.cost + fee, 2)}元'
+                remark = f'温度从{ac.temperature_now} °C升高到{ac.temperature_now+0.5} °C,当前风速为{ac.mode},对应费率为{fee*2}元/1°C,产生费用{fee}元,费用从{round(ac.cost, 2)}元增加到{round(ac.cost + fee, 2)}元'
             )
         else:
             log_entry = Log(
                 type=type,
                 operator=operator,
                 object=ac,
-                remark = f'温度从{ac.temperature_now} °C降低到{ac.temperature_now-1} °C,当前风速为{ac.mode},对应费率为{fee}元/1°C,产生费用{fee}元,费用从{round(ac.cost, 2)}元增加到{round(ac.cost + fee, 2)}元'
+                remark = f'温度从{ac.temperature_now} °C降低到{ac.temperature_now-0.5} °C,当前风速为{ac.mode},对应费率为{fee*2}元/1°C,产生费用{fee}元,费用从{round(ac.cost, 2)}元增加到{round(ac.cost + fee, 2)}元'
             )
         log_entry.save()
     elif type == '入住':

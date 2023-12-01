@@ -74,9 +74,15 @@ const ReceptionView: React.FC = () => {
                     </div>
                     <div className="card-body">
                       <ul className="list-unstyled mt-3 mb-4">
-                        <li><h5>选择房间</h5></li>
-                        <li><h5>房间选择</h5></li>
-                        <li><h5>入住日期</h5></li>
+                        <li>
+                          <h5>选择房间</h5>
+                        </li>
+                        <li>
+                          <h5>房间选择</h5>
+                        </li>
+                        <li>
+                          <h5>入住日期</h5>
+                        </li>
                       </ul>
                       <button
                         type="button"
@@ -97,10 +103,16 @@ const ReceptionView: React.FC = () => {
                     </div>
                     <div className="card-body">
                       <ul className="list-unstyled mt-3 mb-4">
-                        <li><h5>费用结算</h5></li>
+                        <li>
+                          <h5>费用结算</h5>
+                        </li>
 
-                        <li><h5>收据打印</h5></li>
-                        <li><h5>空调重置</h5></li>
+                        <li>
+                          <h5>收据打印</h5>
+                        </li>
+                        <li>
+                          <h5>空调重置</h5>
+                        </li>
                       </ul>
                       <button
                         type="button"
@@ -121,9 +133,15 @@ const ReceptionView: React.FC = () => {
                     </div>
                     <div className="card-body">
                       <ul className="list-unstyled mt-3 mb-4">
-                        <li><h5>入住统计</h5></li>
-                        <li><h5>收入统计</h5></li>
-                        <li><h5>下载报表</h5></li>
+                        <li>
+                          <h5>入住统计</h5>
+                        </li>
+                        <li>
+                          <h5>收入统计</h5>
+                        </li>
+                        <li>
+                          <h5>下载报表</h5>
+                        </li>
                       </ul>
                       <button
                         type="button"

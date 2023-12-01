@@ -92,14 +92,14 @@ const RoomExpenseChart: React.FC = () => {
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const csvURL = URL.createObjectURL(blob);
     const link = csvLinkRef.current;
-  
-    if (link) { // 确保 link 不为 null
+
+    if (link) {
+      // 确保 link 不为 null
       link.href = csvURL;
       link.download = "rooms-data.csv";
       link.click();
     }
   };
-  
 
   return (
     <div className="col-lg-7 col-xl-8">

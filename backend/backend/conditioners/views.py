@@ -131,6 +131,7 @@ class adminUpdateAcInfo(APIView):
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)  
 
+# 返回房间是否空闲的信息
 class receptionGetRoomNumbers(APIView):
     @transaction.atomic
     def get(self, request):
@@ -191,7 +192,6 @@ class receptionCheckOutForCustom(APIView):
                     roomNumber[log.object.room_number.name] = False
                 else:
                     roomNumber[log.object.room_number.name] = True
-
             room_number = request.data['room_number']
             if roomNumber[room_number]:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -203,10 +203,59 @@ class receptionCheckOutForCustom(APIView):
             ac = user.conditioner
             ac.status = False
             ac.temperature_set = 25
-            ac.mode = '低风速'
+            ac.mode = '中风速'
             ac.total_cost += ac.cost
             ac.cost = 0
             ac.save()
+            return Response(status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+# 重置所有空调的状态,一定要在确保所有功能无误以后再调用,反正就是一个作业,不设置权限了
+class resetAllAcInfo(APIView):
+    @transaction.atomic
+    def get(self, request):
+        try:
+            temperature_now = {
+                "房间101": 10,
+                "房间102": 15,
+                "房间103": 18,
+                "房间104": 12,
+                "房间105": 14,
+            }
+            roomNumber = {}
+            for conditioners in Conditioner.objects.all():
+                roomNumber[conditioners.room_number.name] = True
+            for log in Log.objects.filter(Q(type='入住') | Q(type='结算')):
+                if log.type == '入住':
+                    roomNumber[log.object.room_number.name] = False
+                else:
+                    roomNumber[log.object.room_number.name] = True
+            conditioners = Conditioner.objects.all()
+            for ac in conditioners:
+                # 先为每个房间办理退房
+                if not roomNumber[ac.room_number.name]:
+                    user = User.objects.get(name=ac.room_number.name)
+                    user.password = ''
+                    user.save()
+                    write_log('结算', '前台', user.conditioner, remark='无')
+                # 再重置空调的状态
+                ac.status = False
+                ac.temperature_set = 22
+                ac.temperature_now = temperature_now[ac.room_number.name]
+                ac.mode = '中风速'
+                ac.total_cost += ac.cost
+                ac.cost = 0
+                ac.save()
+            # setting的状态也要重置
+            setting = Settings.objects.get(id=1)
+            setting.mode = '制热'
+            setting.temperature_upper = 25
+            setting.temperature_lower = 18
+            setting.low_speed_fee = 1
+            setting.mid_speed_fee = 1
+            setting.high_speed_fee = 1
+            setting.save()
             return Response(status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)

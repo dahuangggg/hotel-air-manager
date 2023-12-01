@@ -28,6 +28,7 @@ import {
 import NavigationBar from "../components/NavigationBar/NavigationBar";
 import { toast } from "react-toastify";
 import AdminSettings from "../components/AdminSettings";
+import { fetchRoomNumbers, getRoomNumbers } from "../slices/receptionSlice";
 
 const ManagerAcView: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -35,9 +36,11 @@ const ManagerAcView: React.FC = () => {
 
   const allAcInfos = useSelector(getAcInfos);
   const settings = useSelector(getSettings);
+  const roomNumbers = useSelector(getRoomNumbers);
 
   useEffect(() => {
     dispatch(fetchAcInfos());
+    dispatch(fetchRoomNumbers());
   }, [dispatch]);
 
   const handleAcStatusToggle = (roomNumber: string) => {
@@ -151,29 +154,55 @@ const ManagerAcView: React.FC = () => {
                     <TableCell>当前费用</TableCell>
                     <TableCell>累计费用</TableCell>
                     <TableCell>状态</TableCell>
+                    <TableCell>备注</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {allAcInfos.map((acInfo) => (
                     <TableRow key={acInfo.roomNumber}>
-                      <TableCell>{acInfo.roomNumber}</TableCell>
-                      <TableCell>{acInfo.currentTemperature}°C</TableCell>
+                      <TableCell>
+                        <Typography
+                          color={
+                            roomNumbers[acInfo.roomNumber]
+                              ? "textSecondary"
+                              : "textPrimary"
+                          }
+                        >
+                          {acInfo.roomNumber}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          color={
+                            roomNumbers[acInfo.roomNumber]
+                              ? "textSecondary"
+                              : "textPrimary"
+                          }
+                        >
+                          {acInfo.currentTemperature}°C
+                        </Typography>
+                      </TableCell>
                       <TableCell>
                         <ButtonGroup
                           size="small"
                           aria-label="small outlined button group"
                         >
                           <Button
+                            disabled={!!roomNumbers[acInfo.roomNumber]}
                             onClick={() =>
                               handleTemperatureChange(acInfo.roomNumber, -1)
                             }
                           >
                             -
                           </Button>
-                          <Button variant="outlined">
+                          <Button
+                            variant="outlined"
+                            disabled={roomNumbers[acInfo.roomNumber]}
+                          >
                             {acInfo.targetTemperature}°C
                           </Button>
                           <Button
+                            disabled={!!roomNumbers[acInfo.roomNumber]}
                             onClick={() =>
                               handleTemperatureChange(acInfo.roomNumber, 1)
                             }
@@ -185,6 +214,7 @@ const ManagerAcView: React.FC = () => {
                       <TableCell>
                         <Select
                           value={acInfo.acMode}
+                          disabled={!!roomNumbers[acInfo.roomNumber]}
                           onChange={(e) =>
                             handleModeChange(acInfo.roomNumber, e)
                           }
@@ -196,21 +226,63 @@ const ManagerAcView: React.FC = () => {
                           <MenuItem value="高风速">高风速</MenuItem>
                         </Select>
                       </TableCell>
-                      <TableCell>{acInfo.queueStatus}</TableCell>
-                      <TableCell>{acInfo.cost?.toFixed(2)}元</TableCell>
                       <TableCell>
-                        {(acInfo?.cost + acInfo?.totalCost).toFixed(2)}元
+                        <Typography
+                          color={
+                            roomNumbers[acInfo.roomNumber]
+                              ? "textSecondary"
+                              : "textPrimary"
+                          }
+                        >
+                          {acInfo.queueStatus}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          color={
+                            roomNumbers[acInfo.roomNumber]
+                              ? "textSecondary"
+                              : "textPrimary"
+                          }
+                        >
+                          {acInfo.cost?.toFixed(2)}元
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          color={
+                            roomNumbers[acInfo.roomNumber]
+                              ? "textSecondary"
+                              : "textPrimary"
+                          }
+                        >
+                          {(acInfo?.cost + acInfo?.totalCost).toFixed(2)}元
+                        </Typography>
                       </TableCell>
                       <TableCell>
                         <Button
                           variant="contained"
                           color={acInfo.acStatus ? "info" : "inherit"}
+                          disabled={!!roomNumbers[acInfo.roomNumber]}
                           onClick={() =>
                             handleAcStatusToggle(acInfo.roomNumber)
                           }
                         >
                           {acInfo.acStatus ? "已开启" : "已关闭"}
                         </Button>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          color={
+                            roomNumbers[acInfo.roomNumber]
+                              ? "textSecondary"
+                              : "textPrimary"
+                          }
+                        >
+                          {roomNumbers[acInfo.roomNumber]
+                            ? "房间空闲"
+                            : "已入住"}
+                        </Typography>
                       </TableCell>
                     </TableRow>
                   ))}

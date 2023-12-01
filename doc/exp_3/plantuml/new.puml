@@ -1,0 +1,27 @@
+@startuml
+actor cashier as "Cashier"
+entity "Register" as r
+entity "Sale" as s
+entity "ProductCatalog" as pc
+entity "ProductDescription" as pd
+entity "SalesLineItem" as sli
+
+cashier -> r : enterItem(itemId, quantity)
+r -> s : getSale()
+activate s
+s -> pc : getProductSpecification(itemId)
+activate pc
+pc -> pd : find(itemId)
+activate pd
+pd --> pc : return
+deactivate pd
+pc --> s : spec
+deactivate pc
+s -> sli : makeLineItem(spec, quantity)
+activate sli
+sli --> s : new sli
+deactivate sli
+s --> r : showDescriptionAndPrice(spec)
+deactivate s
+r --> cashier : display
+@enduml
