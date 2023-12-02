@@ -5,7 +5,7 @@ from acounts.models import User
 from rest_framework import status
 from .models import Conditioner
 from setup.models import Settings
-from .task import request_conditioner_run
+from .task import request_conditioner_run, check_and_update_conditioner_status
 from django.utils import timezone
 from log.models import Log
 from log.views import write_log
@@ -54,6 +54,7 @@ class updateAcInfo(APIView):
                 write_log('调风', '客户', ac, request=request)
                 ac.mode = request.data['acMode']
                 ac.save()
+                check_and_update_conditioner_status()
             if ac.temperature_now > ac.temperature_set and setting.mode == '制冷' and ac.queue_status == '无事可做' and ac.status:
                 request_conditioner_run(ac.id)
             if ac.temperature_now < ac.temperature_set and setting.mode == '制热' and ac.queue_status == '无事可做'and ac.status:
@@ -103,17 +104,16 @@ class adminUpdateAcInfo(APIView):
             if ac.temperature_set != request.data['targetTemperature']:
                 write_log('调温', '管理员', ac, request=request)
                 ac.temperature_set = request.data['targetTemperature']
+                ac.save()
             if ac.status != request.data['acStatus']:
                 write_log('开关机', '管理员', ac)
                 ac.status = request.data['acStatus']
-                # 关机的时候需要调度
-                # if (not ac.status) & (ac.queue_status!='无事可做'):
-                #     ac.queue_status="无事可做"
-                #     write_log('调度', '系统', ac, "管理员关闭了空调,调度结束")
+                ac.save()
             if ac.mode != request.data['acMode']:
                 write_log('调风', '管理员', ac, request=request)
-            ac.mode = request.data['acMode']
-            ac.save()
+                ac.mode = request.data['acMode']
+                ac.save()
+                check_and_update_conditioner_status()
             if ac.temperature_now > ac.temperature_set and setting.mode == '制冷' and ac.queue_status == '无事可做' and ac.status:
                 request_conditioner_run(ac.id)
             if ac.temperature_now < ac.temperature_set and setting.mode == '制热' and ac.queue_status == '无事可做'and ac.status:
@@ -223,6 +223,13 @@ class resetAllAcInfo(APIView):
                 "房间104": 12,
                 "房间105": 14,
             }
+            password = {
+                "房间101": "1111",
+                "房间102": "2222",
+                "房间103": "3333",
+                "房间104": "4444",
+                "房间105": "5555",
+            }
             roomNumber = {}
             for conditioners in Conditioner.objects.all():
                 roomNumber[conditioners.room_number.name] = True
@@ -247,6 +254,12 @@ class resetAllAcInfo(APIView):
                 ac.total_cost += ac.cost
                 ac.cost = 0
                 ac.save()
+                # 重新办理入住
+                user = User.objects.get(name=ac.room_number.name)
+                user.password = password[ac.room_number.name]
+                user.save()
+                write_log('入住', '前台', ac, remark='无')
+
             # setting的状态也要重置
             setting = Settings.objects.get(id=1)
             setting.mode = '制热'

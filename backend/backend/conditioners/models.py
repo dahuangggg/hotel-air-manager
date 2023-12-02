@@ -32,3 +32,5 @@ class Conditioner(models.Model):
     total_cost = models.FloatField(blank=False, default=0)
     # 空调队列状态
     queue_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='无事可做')
+    # 队列时间
+    queue_time = models.DateTimeField(blank=True, null=True)
