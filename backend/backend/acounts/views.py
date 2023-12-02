@@ -64,19 +64,22 @@ class ChangePasswordView(APIView):
 
 class GetRoomsNameView(APIView):
     def get(self, request):
-        # 防止check out空闲的空调
+        # 初始化所有房间为非空闲
         roomNumber = {}
         for conditioners in Conditioner.objects.all():
-            roomNumber[conditioners.room_number.name] = True
+            roomNumber[conditioners.room_number.name] = False
+        # 更新房间状态
         for log in Log.objects.filter(Q(type='入住') | Q(type='结算')):
             if log.type == '入住':
-                roomNumber[log.object.room_number.name] = False
-            else:
                 roomNumber[log.object.room_number.name] = True
+            else:
+                roomNumber[log.object.room_number.name] = False
+        # 生成入住房间列表
         rooms_name = []
-        for room in roomNumber:
-            if roomNumber[room]:
+        for room, isOccupied in roomNumber.items():
+            if isOccupied:
                 rooms_name.append(room)
+        # 返回入住房间列表
         return Response({
             'rooms_name': rooms_name
             }, status=status.HTTP_200_OK)
