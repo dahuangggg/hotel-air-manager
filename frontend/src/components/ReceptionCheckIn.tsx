@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import Stepper from "@mui/material/Stepper";
@@ -11,7 +11,7 @@ import StepConnector, {
   stepConnectorClasses,
 } from "@mui/material/StepConnector";
 import { StepIconProps } from "@mui/material/StepIcon";
-import { Button, Grid, Paper } from "@mui/material";
+import {Button, Grid, Paper, Typography} from "@mui/material";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import {
@@ -207,9 +207,13 @@ const ReceptionCheckIn = () => {
           elevation={3}
           style={{ padding: "20px", width: "400px", textAlign: "center" }}
         >
-          <div style={{ fontSize: "16px", marginBottom: "10px" }}>
+          {/*<div style={{ fontSize: "16px", marginBottom: "10px" }}>*/}
+          {/*  为新客户设置空调密码*/}
+          {/*</div>*/}
+          <Typography variant="h4" align="center" gutterBottom>
             为新客户设置空调密码
-          </div>
+          </Typography>
+          <div style={{ height: "24px" }} />
           <div style={{ display: "flex", justifyContent: "center" }}>
             {Array.from({ length: 4 }).map((_, index) => (
               <input
@@ -224,13 +228,13 @@ const ReceptionCheckIn = () => {
                   handleKeyDown(index, e)
                 }
                 style={{
-                  width: "30px",
-                  height: "30px",
+                  width: "50px",
+                  height: "50px",
                   textAlign: "center",
                   marginRight: "5px",
                   border: "1px solid #ccc",
                   borderRadius: "4px",
-                  fontSize: "14px",
+                  fontSize: "24px",
                   outline: "none",
                 }}
                 autoFocus={index === 0}
@@ -240,6 +244,7 @@ const ReceptionCheckIn = () => {
               />
             ))}
           </div>
+          <div style={{ height: "24px" }} />
           <Button variant="outlined" onClick={handleBack}>
             返回
           </Button>
