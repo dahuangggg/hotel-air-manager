@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Paper, Grid } from "@mui/material";
+import {Paper, Grid, Typography} from "@mui/material";
 import { useAppDispatch } from "../store";
 import NavigationBar from "../components/NavigationBar/NavigationBar";
 import { login } from "../slices/authSlice";
@@ -51,7 +51,7 @@ const ReceptionLoginView = () => {
   };
 
   return (
-    <div>
+    <>
       <NavigationBar breadcrumbs={null} />
       <Grid
         container
@@ -62,11 +62,15 @@ const ReceptionLoginView = () => {
         <Grid item xs={12} sm={8} md={6} lg={4}>
           <Paper
             elevation={3}
-            style={{ padding: "20px", width: "400px", textAlign: "center" }}
+            style={{ padding: "20px", textAlign: "center" }}
           >
-            <div style={{ fontSize: "16px", marginBottom: "10px" }}>
+            {/*<div style={{ fontSize: "16px", marginBottom: "10px" }}>*/}
+            {/*  请输入前台密码*/}
+            {/*</div>*/}
+            <Typography variant="h4" align="center" gutterBottom>
               请输入前台密码
-            </div>
+            </Typography>
+            <div style={{ height: "64px" }} />
             <div style={{ display: "flex", justifyContent: "center" }}>
               {Array.from({ length: 4 }).map((_, index) => (
                 <input
@@ -81,13 +85,13 @@ const ReceptionLoginView = () => {
                     handleKeyDown(index, e)
                   }
                   style={{
-                    width: "30px",
-                    height: "30px",
+                    width: "50px",
+                    height: "50px",
                     textAlign: "center",
                     marginRight: "5px",
                     border: "1px solid #ccc",
                     borderRadius: "4px",
-                    fontSize: "14px",
+                    fontSize: "24px",
                     outline: "none",
                   }}
                   autoFocus={index === 0}
@@ -100,7 +104,7 @@ const ReceptionLoginView = () => {
           </Paper>
         </Grid>
       </Grid>
-    </div>
+    </>
   );
 };
 
