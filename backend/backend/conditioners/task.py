@@ -4,6 +4,10 @@ from setup.models import Settings
 from django.db import transaction
 from log.models import Log, Detail
 from log.views import write_log, write_detail
+from django.db.models import Case, When, Value, IntegerField
+from django.db.models import F, ExpressionWrapper, DurationField, Q
+from django.utils import timezone
+from datetime import timedelta
 
 MAX_RUNNING_CONDITIONERS = 3
 
@@ -41,11 +45,17 @@ def update_temperature_back(ac, mode):
 @shared_task
 def update_temperature():
     # 从数据库中获取设置
-    setting = Settings.objects.get(id=1)
-    setting_mode = setting.mode
-    setting_status = setting.status
-    setting_temperature_upper = setting.temperature_upper
-    setting_temperature_lower = setting.temperature_lower
+    try:
+        setting = Settings.objects.get(id=1)
+        setting_mode = setting.mode
+        setting_status = setting.status
+        setting_temperature_upper = setting.temperature_upper
+        setting_temperature_lower = setting.temperature_lower
+    except:
+        setting_mode = '制热'
+        setting_status = False
+        setting_temperature_upper = 25
+        setting_temperature_lower = 18
     # 从数据库中获取所有空调
     acs = Conditioner.objects.all()
 
@@ -148,20 +158,104 @@ def update_temperature():
             ac.save()
 
 
+
 # 定义更新空调队列状态的任务,可以理解为等待态到运行态的任务会被自动完成
 @shared_task
 def check_and_update_conditioner_status():
     # 确保该代码块内的数据库操作要么完全成功，要么完全失败
     with transaction.atomic():
         running_conditioners = Conditioner.objects.filter(queue_status='运行中')
-        if running_conditioners.count() < MAX_RUNNING_CONDITIONERS:
-            # 如果运行态低于3个，尝试从等待队列中取出一个conditioner设置为运行态
-            # 先进先出的调度方式
-            waiting_conditioner = Conditioner.objects.select_for_update().filter(queue_status='等待中').first()
-            if waiting_conditioner:
-                write_log('调度', '系统', waiting_conditioner, remark = '等待态转为运行态')
-                waiting_conditioner.queue_status = '运行中'
-                waiting_conditioner.save()
+        waiting_conditioners = Conditioner.objects.filter(queue_status='等待中')
+        activeAc = Conditioner.objects.filter(queue_status__in=['运行中', '等待中'])
+        if activeAc.count() <= MAX_RUNNING_CONDITIONERS:
+            for ac in waiting_conditioners:
+                ac.queue_status = '运行中'
+                write_log('调度', '系统', ac, remark = '等待态转为运行态')
+                ac.save()
+        else:
+            activeAc = activeAc.annotate(
+                custom_order=Case(
+                    When(mode='高风速', then=Value(1)),
+                    When(mode='中风速', then=Value(2)),
+                    When(mode='低风速', then=Value(3)),
+                    default=Value(4),
+                    output_field=IntegerField()
+                ),
+                time_diff=ExpressionWrapper(timezone.now() - F('queue_time'), output_field=DurationField())
+            ).order_by('custom_order', '-time_diff')
+            # 优先级的调度方式
+            targe_mode = activeAc[2].mode # 可能发生时间片调度的mode
+            if targe_mode == "高风速":
+                for ac in activeAc.filter(mode="中风速"):
+                    if ac.queue_status != "等待中":
+                        ac.queue_status = "等待中"
+                        write_log('调度', '系统', ac, remark = '运行态转为等待态')
+                        ac.save()
+                for ac in activeAc.filter(mode="低风速"):
+                    if ac.queue_status != "等待中":
+                        ac.queue_status = "等待中"
+                        write_log('调度', '系统', ac, remark = '运行态转为等待态')
+                        ac.save()
+            if targe_mode == "中风速":
+                for ac in activeAc.filter(mode="高风速"):
+                    if ac.queue_status != "运行中":
+                        # 将中风速的conditioner转为等待态
+                        targe_ac = activeAc.filter(Q(mode="低风速") & Q(queue_status="运行中")).first()
+                        if targe_ac:
+                            targe_ac.queue_status = "等待中"
+                            write_log('调度', '系统', targe_ac, remark = '运行态转为等待态')
+                            targe_ac.save()
+                        else:
+                            targe_ac = activeAc.filter(Q(mode="中风速") & Q(queue_status="运行中")).first()
+                            targe_ac.queue_status = "等待中"
+                            write_log('调度', '系统', targe_ac, remark = '运行态转为等待态')
+                            targe_ac.save()
+                        ac.queue_status = "运行中"
+                        write_log('调度', '系统', ac, remark = '等待态转为运行态')
+                        ac.save()
+                for ac in activeAc.filter(mode="低风速"):
+                    if ac.queue_status != "等待中":
+                        ac.queue_status = "等待中"
+                        write_log('调度', '系统', ac, remark = '运行态转为等待态')
+                        ac.save()
+            elif targe_mode == "低风速":
+                for ac in activeAc.filter(mode="中风速"):
+                    if ac.queue_status != "运行中":
+                        targe_ac = activeAc.filter(Q(mode="低风速") & Q(queue_status="运行中")).first()
+                        targe_ac.queue_status = "等待中"
+                        write_log('调度', '系统', targe_ac, remark = '运行态转为等待态')
+                        targe_ac.save()
+                        ac.queue_status = "运行中"
+                        write_log('调度', '系统', ac, remark = '等待态转为运行态')
+                        ac.save()
+                for ac in activeAc.filter(mode="高风速"):
+                    if ac.queue_status != "运行中":
+                        targe_ac = activeAc.filter(Q(mode="低风速") & Q(queue_status="运行中")).first()
+                        targe_ac.queue_status = "等待中"
+                        write_log('调度', '系统', targe_ac, remark = '运行态转为等待态')
+                        ac.queue_status = "运行中"
+                        write_log('调度', '系统', ac, remark = '等待态转为运行态')
+                        ac.save()
+
+            # 时间片调度
+            mode_running_conditioners = activeAc.filter(mode=targe_mode, queue_status='运行中')
+            mode_waiting_conditioners = activeAc.filter(mode=targe_mode, queue_status='等待中')
+            index = 0
+            for ac in mode_waiting_conditioners:
+                if timezone.now() - ac.queue_time >= timedelta(minutes=2):
+                    conditioner_to_waiting = mode_running_conditioners[index]
+                    index+=1
+                    conditioner_to_waiting.queue_status = "等待中"
+                    write_log('调度', '系统', conditioner_to_waiting, remark='运行态转为等待态')
+                    conditioner_to_waiting.save()
+                    ac.queue_status = "运行中"
+                    write_log('调度', '系统', ac, remark = '等待态转为运行态')
+                    ac.save()
+                else:
+                    break
+        # for ac in Conditioner.objects.all():
+        #     if ac.
+        
 
 # 请求id为conditioner_id的conditioner加入运行态
 def request_conditioner_run(conditioner_id):
@@ -174,10 +268,56 @@ def request_conditioner_run(conditioner_id):
             write_log('请求服务', '客户', conditioner, '请求服务,等待队列未满,直接进入运行态')
             write_log('调度', '系统', conditioner, remark = '闲置态转为运行态')
         else:
-            # 否则设置为等待态
-            conditioner.queue_status = '等待中'
-            write_log('请求服务', '客户', conditioner, '请求服务,等待队列已满, 先进入等待态')
-            write_log('调度', '系统', conditioner, remark = '闲置态转为等待态')
+            # 优先级的调度方式
+            if conditioner.mode == '低风速':
+                conditioner.queue_status = '等待中'
+                write_log('请求服务', '客户', conditioner, '请求服务,等待队列已满, 先进入等待态')
+                write_log('调度', '系统', conditioner, remark = '闲置态转为等待态')
+            elif conditioner.mode == '中风速':
+                # 判断运行态中是否有低风速的conditioner
+                low_speed_conditioner = Conditioner.objects.filter(queue_status='运行中', mode='低风速').first()
+                if low_speed_conditioner:
+                    # 如果有低风速的conditioner,则将其设置为等待态
+                    low_speed_conditioner.queue_status = '等待中'
+                    write_log('调度', '系统', low_speed_conditioner, remark = '有中风速请求,低风速转为等待态')
+                    low_speed_conditioner.save()
+                    # 将当前conditioner设置为运行态
+                    conditioner.queue_status = '运行中'
+                    write_log('请求服务', '客户', conditioner, '请求服务,等待队列已满,由于当前风速为中风速,优先级较高,直接进入运行态')
+                    write_log('调度', '系统', conditioner, remark = '闲置态转为运行态')
+                else:
+                    # 如果没有低风速的conditioner,则将其设置为等待态
+                    conditioner.queue_status = '等待中'
+                    write_log('请求服务', '客户', conditioner, '请求服务,等待队列已满,先进入等待态')
+                    write_log('调度', '系统', conditioner, remark = '闲置态转为等待态')
+            elif conditioner.mode == '高风速':
+                # 判断运行态中是否有低风速和中风速的conditioner
+                low_speed_conditioner = Conditioner.objects.filter(queue_status='运行中', mode='低风速').first()
+                mid_speed_conditioner = Conditioner.objects.filter(queue_status='运行中', mode='中风速').first()
+                if low_speed_conditioner:
+                    # 如果有低风速的conditioner,则将其设置为等待态
+                    low_speed_conditioner.queue_status = '等待中'
+                    write_log('调度', '系统', low_speed_conditioner, remark = '有高风速请求,低风速转为等待态')
+                    low_speed_conditioner.save()
+                    # 将当前conditioner设置为运行态
+                    conditioner.queue_status = '运行中'
+                    write_log('请求服务', '客户', conditioner, '请求服务,等待队列已满,由于当前风速为高风速,优先级最高,直接进入运行态')
+                    write_log('调度', '系统', conditioner, remark = '闲置态转为运行态')
+                elif mid_speed_conditioner:
+                    # 如果有中风速的conditioner,则将其设置为等待态
+                    mid_spe.ed_conditioner.queue_status = '等待中'
+                    write_log('调度', '系统', mid_speed_conditioner, remark = '有高风速请求,中风速转为等待态')
+                    mid_speed_conditioner.save()
+                    # 将当前conditioner设置为运行态
+                    conditioner.queue_status = '运行中'
+                    write_log('请求服务', '客户', conditioner, '请求服务,等待队列已满,由于当前风速为高风速,优先级较高,直接进入运行态')
+                    write_log('调度', '系统', conditioner, remark = '闲置态转为运行态')
+                else:
+                    # 如果没有低风速和中风速的conditioner,则将其设置为等待态
+                    conditioner.queue_status = '等待中'
+                    write_log('请求服务', '客户', conditioner, '请求服务,等待队列已满,先进入等待态')
+                    write_log('调度', '系统', conditioner, remark = '闲置态转为等待态')
+
         conditioner.save()
         # 检查并更新conditioner的状态
         check_and_update_conditioner_status()

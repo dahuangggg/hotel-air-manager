@@ -71,6 +71,9 @@ def write_log(type, operator, ac, remark='无', request=None, up = True):
             remark = remark
         )
         log_entry.save()
+        # 每次调度后更新队列时间
+        ac.queue_time = timezone.now()
+        ac.save()
     elif type == '产生费用':
         setting = Settings.objects.get(id=1)
         if ac.mode == '低风速':
