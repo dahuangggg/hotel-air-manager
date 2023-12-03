@@ -233,3 +233,31 @@ fuck you,Firefox
 Visiting the same darn site, sending the same darn request, 
 and while every other browser's cruising, 
 Firefox decides to throw a 403 error in my face.
+</br></br>对不起错怪你了,好像是cookie的问题
+
+## 2023/12/4
+这个版本支持了docker的一键部署,云服务器的最低要求是2v CPU + 4GB memory
+```
+# install docker
+sudo apt-get update
+sudo apt install docker.io
+# check if installed
+sudo docker --version
+
+# install docker-compose 
+sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+sud.o chmod +x /usr/local/bin/docker-compose
+# check if installed
+sudo docker-compose version
+
+git clone https://github.com/<your account or organization>/<repo>.git
+cd <repo>
+
+chmod +x start-letsencrypt.sh
+chmod +x docker/init-letsencrypt.sh
+./start-letsencrypt.sh <your domain name>
+
+sudo docker-compose -f docker-compose-pro.yml down
+sudo docker-compose -f docker-compose-pro.yml up --build
+```
+ps:有个BUG,只能在无痕模式下浏览
