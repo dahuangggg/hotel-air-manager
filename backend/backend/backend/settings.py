@@ -14,7 +14,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-load_dotenv("../.env")
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,13 +28,14 @@ SECRET_KEY = os.environ.get(
     'SECRET_KEY', default='django-insecure-_6fm0c_&b3pg(h9@xwc+3h7dfv-m0o*ili$@xh=vgfy+ovusf*')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', default=True)
+DEBUG_STR = os.environ.get('DEBUG', default="True")
+DEBUG = DEBUG_STR.lower() == "true"
 
-allowed_hosts_string = os.environ.get('ALLOWED_HOSTS', default='*')
-ALLOWED_HOSTS = allowed_hosts_string.split(',')
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "0.0.0.0", "ghost-boilerplate.com"] 
 
 # CORS
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_TRUSTED_ORIGINS = ['https://*.ghost-boilerplate.com', 'http://127.0.0.1']
@@ -65,12 +66,12 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # add this
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # add this
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -116,6 +117,7 @@ DATABASES_ALL = {
 }
 
 DATABASES = {"default": DATABASES_ALL[os.environ.get("DJANGO_DB", DB_SQLITE)]}
+# DATABASES = {"default": DATABASES_ALL[DB_POSTGRESQL]}
 
 
 
@@ -154,11 +156,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATIC_URL = "/django_static/"
+STATIC_ROOT = BASE_DIR / "django_static"
 
 
 # celery配置
@@ -167,20 +171,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CELERY_BROKER_URL = "sqla+sqlite:///celery.sqlite"
 CELERY_RESULT_BACKEND = "db+sqlite:///celery.sqlite"
 
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_IMPORTS = ("conditioners.task",)
+# CELERY_ACCEPT_CONTENT = ['application/json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_IMPORTS = ("conditioners.task",)
 
-# 定时任务调度器配置
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-CELERY_BEAT_SCHEDULE = {
-    'update_temperature': {
-        'task': 'conditioners.task.update_temperature',
-        'schedule': 10.0,
-    },
-    'update_conditioner_status': {
-        'task': 'conditioners.task.check_and_update_conditioner_status',
-        'schedule': 20.0,
-    },
-}
+# # 定时任务调度器配置
+# CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+# CELERY_BEAT_SCHEDULE = {
+#     'update_temperature': {
+#         'task': 'conditioners.task.update_temperature',
+#         'schedule': 10.0,
+#     },
+#     'update_conditioner_status': {
+#         'task': 'conditioners.task.check_and_update_conditioner_status',
+#         'schedule': 20.0,
+#     },
+# }

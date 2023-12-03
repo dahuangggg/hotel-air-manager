@@ -18,6 +18,18 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # 自动发现并注册任务
 app.autodiscover_tasks()
 
+@app.on_after_configure.connect
+def setup_periodic_tasks(sender, **kwargs):
+    try:
+        import django
+        django.setup()
+        from conditioners.task import update_temperature, check_and_update_conditioner_status
+        sender.add_periodic_task(10.0, update_temperature.s(), name='update_temperature')
+        sender.add_periodic_task(20.0, check_and_update_conditioner_status.s(), name='check_and_update_conditioner_status')
+    except Exception as e:
+        print("Problem with setup_periodic_tasks")
+        print(str(e))
+
 @app.task(bind=True)
 def debug_task(self):
     print(f'Request: {0!r}'.format(self.request))
