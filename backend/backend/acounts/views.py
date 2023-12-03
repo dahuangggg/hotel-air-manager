@@ -66,7 +66,7 @@ class GetRoomsNameView(APIView):
     def get(self, request):
         # 防止check out空闲的空调
         roomNumber = {}
-        for conditioners in Conditioner.objects.all():
+        for conditioners in Conditioner.objects.all().order_by('room_number'):
             roomNumber[conditioners.room_number.name] = True
         for log in Log.objects.filter(Q(type='入住') | Q(type='结算')):
             if log.type == '入住':

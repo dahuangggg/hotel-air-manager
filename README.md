@@ -227,3 +227,9 @@ done
 
 ## 2023/12/1
 按老师的要求改了一些细节,调度的逻辑不太清楚没做
+
+## 2023/12/3
+fuck you,Firefox
+Visiting the same darn site, sending the same darn request, 
+and while every other browser's cruising, 
+Firefox decides to throw a 403 error in my face.

@@ -75,7 +75,7 @@ class getAllAcInfo(APIView):
     def post(self, request):
         try:
             user = User.objects.get(name=request.data['token'])
-            acs = Conditioner.objects.all()
+            acs = Conditioner.objects.all().order_by('room_number')
             acs_info = []
             for ac in acs:
                 acs_info.append({
