@@ -75,7 +75,7 @@ class GetRoomsNameView(APIView):
                 roomNumber[log.object.room_number.name] = True
         rooms_name = []
         for room in roomNumber:
-            if roomNumber[room]:
+            if not roomNumber[room]:
                 rooms_name.append(room)
         return Response({
             'rooms_name': rooms_name
