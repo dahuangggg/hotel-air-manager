@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 let initToken: string | null = null;
 if (localStorage.getItem("token")) {
   initToken = localStorage.getItem("token");
+  delete axios.defaults.headers.common["Authorization"];
 }
 
 export type AcInfoType = {

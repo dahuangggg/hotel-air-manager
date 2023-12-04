@@ -8,6 +8,7 @@ import { setBlockUI } from "./authSlice";
 let initToken: string | null = null;
 if (localStorage.getItem("token")) {
   initToken = localStorage.getItem("token");
+  delete axios.defaults.headers.common["Authorization"];
 }
 
 export type SettingsType = {

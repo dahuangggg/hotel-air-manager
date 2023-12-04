@@ -211,7 +211,7 @@ class getAcInfo(APIView):
                 Logs = Log.objects.filter(
                     Q(time__gte=start_datetime) & Q(time__lte=end_datetime)
                 )
-            conditioners = Conditioner.objects.all()
+            conditioners = Conditioner.objects.all().order_by('room_number')
             detail = {}
             for conditioner in conditioners:
                 detail[conditioner.room_number.name] = {
@@ -301,7 +301,7 @@ class getRoomExpense(APIView):
     def get(self, request):
         # try:
         room_expense = []
-        for ac in Conditioner.objects.all():
+        for ac in Conditioner.objects.all().order_by('room_number'):
             # 计算这1个月内每个空调每天的费用
             logs = Log.objects.filter(object=ac, type='产生费用')
             # 获取当前时间

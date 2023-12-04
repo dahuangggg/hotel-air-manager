@@ -6,7 +6,7 @@ __pycache__/
 .idea/
 .env/
 
-/backend/.env/
+/backend/venv/
 /backend/.idea/
 /backend/backend/db.sqlite3
 
