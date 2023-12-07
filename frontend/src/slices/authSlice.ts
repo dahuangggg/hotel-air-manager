@@ -5,7 +5,6 @@ import { NavigateFunction } from "react-router-dom";
 import _ from "lodash";
 import { toast } from "react-toastify";
 
-// 不考虑安全性,就用用户名当令牌算了
 let initToken: string | null = null;
 if (localStorage.getItem("token")) {
   initToken = localStorage.getItem("token");
