@@ -34,7 +34,7 @@ class LoginView(APIView):
         user_group.token = response.json()['token']
         user_group.save()
 
-        if user.password == request.data['password']:
+        if user.password == reque222st.data['password']:
             return Response({
                 'success': '登陆成功',
                 'token': user.name,

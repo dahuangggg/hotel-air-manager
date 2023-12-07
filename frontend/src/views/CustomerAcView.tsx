@@ -153,9 +153,9 @@ const CustomerAcView: React.FC = () => {
                       当前费率
                     </Typography>
                     <Typography variant="h4">
-                      {acMode === "低风速" && settings.lowSpeedFee}
-                      {acMode === "中风速" && settings.midSpeedFee}
-                      {acMode === "高风速" && settings.highSpeedFee} RMB/°C
+                      {acMode === "low" && settings.lowSpeedFee}
+                      {acMode === "medium" && settings.midSpeedFee}
+                      {acMode === "high" && settings.highSpeedFee} RMB/°C
                     </Typography>
                   </Grid>
                   <Grid item xs={6}>
@@ -197,9 +197,9 @@ const CustomerAcView: React.FC = () => {
                         sx={{ maxWidth: "200px" }}
                         disabled={!acStatus}
                       >
-                        <MenuItem value="低风速">低风速</MenuItem>
-                        <MenuItem value="中风速">中风速</MenuItem>
-                        <MenuItem value="高风速">高风速</MenuItem>
+                        <MenuItem value="low">低风速</MenuItem>
+                        <MenuItem value="medium">中风速</MenuItem>
+                        <MenuItem value="high">高风速</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>

@@ -5,9 +5,9 @@ from acounts.models import User
 
 class Conditioner(models.Model):
     MODE_CHOICES = (
-        ('低风速', '低风速'),
-        ('中风速', '中风速'),
-        ('高风速', '高风速'),
+        ('low', 'low'),
+        ('medium', 'medium'),
+        ('high', 'high'),
     )
     STATUS_CHOICES = [
         ('运行中', '运行中'),

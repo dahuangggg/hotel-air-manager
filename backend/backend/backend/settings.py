@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'conditioners',
     'setup',
     'log',
+    'account_group1',
 ]
 
 MIDDLEWARE = [

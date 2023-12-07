@@ -11,21 +11,42 @@ from log.models import Log
 from log.views import write_log
 from django.db.models import Q
 from django.db import transaction
+import requests
+import json
 
 class getAcInfo(APIView):
     def post(self, request):
         try:
             user = User.objects.get(name=request.data['token'])
             ac = Conditioner.objects.get(room_number=user)
+            user_group = user.user_group1
+            url = f"http://flask.dahuangggg.me:5000/room-status/{user_group.room_number}"
+            payload = ""
+            headers = {
+                'Authorization': 'Bearer ' + user_group.token,
+            }
+            response = requests.request("GET", url, headers=headers, data=payload)
+            backend_ac = response.json()
+            user_group.save()
+
             return Response({
                 'roomNumber': ac.room_number.name,
-                'currentTemperature': ac.temperature_now,
-                'targetTemperature': ac.temperature_set,
-                'acStatus': ac.status,
-                'acMode': ac.mode,
-                'cost': ac.cost,
+                'currentTemperature': backend_ac['roomTemperature'],
+                'targetTemperature': backend_ac['acTemperature'],
+                'acStatus': backend_ac['isOn'],
+                'acMode': backend_ac['fanSpeed'],
+                'cost': backend_ac['consumption'],
                 'totalCost': ac.total_cost,
                 'queueStatus': ac.queue_status,
+
+                # 'roomNumber': ac.room_number.name,
+                # 'currentTemperature': ac.temperature_now,
+                # 'targetTemperature': ac.temperature_set,
+                # 'acStatus': ac.status,
+                # 'acMode': ac.mode,
+                # 'cost': ac.cost,
+                # 'totalCost': ac.total_cost,
+                # 'queueStatus': ac.queue_status,
             }, status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -33,32 +54,60 @@ class getAcInfo(APIView):
 class updateAcInfo(APIView):
     @transaction.atomic
     def post(self, request):
-        try:
-            user = User.objects.get(name=request.query_params.get('token', None))
-            setting = Settings.objects.get(id=1)
+        # try:
+            user = User.objects.get(name=request.data['token'])
             ac = Conditioner.objects.get(room_number=user)
-            if ac.temperature_set != request.data['targetTemperature']:
-                write_log('调温', '客户', ac, request=request)
+            print(request.data)
+            user_group = user.user_group1
+
+            url = f"http://flask.dahuangggg.me:5000/update-status/{user_group.room_number}"
+
+            payload = json.dumps({
+               "isOn": ac.status,
+               "temperature": ac.temperature_set,
+               "fanSpeed": ac.mode,
+               "mode": "heat",
+               "roomType": "大床房",
+               "roomDuration": 1
+            })
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + user_group.token,
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+            backend_ac = response.json()
+            if ac.temperature_set != backend_ac.data['targetTemperature']:
                 ac.temperature_set = request.data['targetTemperature']
                 ac.save()
-            if ac.status != request.data['acStatus']:
-                write_log('开关机', '客户', ac)
-                ac.status = request.data['acStatus']
-                ac.save()
-                # # 关机的时候需要调度
-                # if (not ac.status) & (ac.queue_status!='无事可做'):
-                #     ac.queue_status = "无事可做"
-                #     ac.save()
-                #     write_log('调度', '系统', ac, '用户关闭空调, 服务结束')
-            if ac.mode != request.data['acMode']:
-                write_log('调风', '客户', ac, request=request)
-                ac.mode = request.data['acMode']
-                ac.save()
-                check_and_update_conditioner_status()
-            if ac.temperature_now > ac.temperature_set and setting.mode == '制冷' and ac.queue_status == '无事可做' and ac.status:
-                request_conditioner_run(ac.id)
-            if ac.temperature_now < ac.temperature_set and setting.mode == '制热' and ac.queue_status == '无事可做'and ac.status:
-                request_conditioner_run(ac.id)
+
+
+            # print(request.query_params)
+            # user = User.objects.get(name=request.query_params.get('token', None))
+            # setting = Settings.objects.get(id=1)
+            # ac = Conditioner.objects.get(room_number=user)
+            # if ac.temperature_set != request.data['targetTemperature']:
+            #     write_log('调温', '客户', ac, request=request)
+            #     ac.temperature_set = request.data['targetTemperature']
+            #     ac.save()
+            # if ac.status != request.data['acStatus']:
+            #     write_log('开关机', '客户', ac)
+            #     ac.status = request.data['acStatus']
+            #     ac.save()
+            #     # # 关机的时候需要调度
+            #     # if (not ac.status) & (ac.queue_status!='无事可做'):
+            #     #     ac.queue_status = "无事可做"
+            #     #     ac.save()
+            #     #     write_log('调度', '系统', ac, '用户关闭空调, 服务结束')
+            # if ac.mode != request.data['acMode']:
+            #     write_log('调风', '客户', ac, request=request)
+            #     ac.mode = request.data['acMode']
+            #     ac.save()
+            #     check_and_update_conditioner_status()
+            # if ac.temperature_now > ac.temperature_set and setting.mode == '制冷' and ac.queue_status == '无事可做' and ac.status:
+            #     request_conditioner_run(ac.id)
+            # if ac.temperature_now < ac.temperature_set and setting.mode == '制热' and ac.queue_status == '无事可做'and ac.status:
+            #     request_conditioner_run(ac.id)
             return Response({
                 'room_number': ac.room_number.name,
                 'currentTemperature': ac.temperature_now,
@@ -68,7 +117,7 @@ class updateAcInfo(APIView):
                 'code': ac.cost,
                 'totalCost': ac.total_cost,
             }, status=status.HTTP_200_OK)
-        except:
+       # except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 class getAllAcInfo(APIView):
